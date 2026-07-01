@@ -191,12 +191,44 @@
         </div>
       {% endif %}
 
-      {% comment %} Explicit stock status, under the rating {% endcomment %}
+      {% comment %} Status row: stock + dispatch countdown, under the rating {% endcomment %}
       {% unless onboarding or is_product_modal %}
+        <div class="pdp-statusrow">
+          {% if product_available %}
+            <div class="instockproduct"><i class="far fa-check-circle"></i> IN STOCK</div>
+            <span class="pdp-dispatch">Order within <span class="cd" data-dispatch-countdown>&mdash;</span> for same-day dispatch &middot; get it by <b data-dispatch-date>&mdash;</b></span>
+          {% else %}
+            <div class="instockproduct"><i class="far fa-times-circle"></i> OUT OF STOCK</div>
+          {% endif %}
+        </div>
         {% if product_available %}
-          <div class="instockproduct" style="margin-top:8px;"><i class="far fa-check-circle"></i> IN STOCK</div>
-        {% else %}
-          <div class="instockproduct" style="margin-top:8px;"><i class="far fa-times-circle"></i> OUT OF STOCK</div>
+          <script>
+          (function(){
+            var cdEl=document.querySelector('[data-dispatch-countdown]');
+            var dateEl=document.querySelector('[data-dispatch-date]');
+            if(!cdEl){return;}
+            function fmt(d){return d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});}
+            function nextWeekday(d){var n=new Date(d);do{n.setDate(n.getDate()+1);}while(n.getDay()===0||n.getDay()===6);return n;}
+            function tick(){
+              var now=new Date();
+              var cutoff=new Date(now);cutoff.setHours(16,0,0,0);
+              var day=now.getDay();
+              var beforeCutoff=(now<cutoff)&&day>=1&&day<=5;
+              var dispatch;
+              if(beforeCutoff){
+                var diff=cutoff-now;
+                var h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000);
+                cdEl.textContent=(h>0?h+'h ':'')+m+'m';
+                dispatch=now;
+              }else{
+                cdEl.textContent='tomorrow';
+                dispatch=nextWeekday(now);
+              }
+              if(dateEl){dateEl.textContent=fmt(nextWeekday(dispatch));}
+            }
+            tick();setInterval(tick,60000);
+          })();
+          </script>
         {% endif %}
       {% endunless %}
 
@@ -302,9 +334,11 @@
 {% render 'product-page-offers' %}
 
 
-  
+
 </div>
 
+        {% comment %} Nicotine strength guidance (e-liquid / nic salt only) {% endcomment %}
+        {% unless is_product_modal %}{% render 'product-strength-helper' %}{% endunless %}
 
         {% unless onboarding %}
           {%
@@ -336,12 +370,15 @@
             {% endif %}
         </div>
 
-<div align="center">
-<div style="max-width:300px; font-size:13px; display:inline-block; margin-top:10px;"><span style="float:left; display:flex; margin-bottom: 0px; margin-left: 0rem; padding: 0;"><i style="font-size:25px; color:#0b76e0;" class="fa fa-info-circle"></i></span>
-<span style="margin-top:0px; margin-left:0.5rem; margin-right:10px; float:right;"><b>Need advice?</b><br><a style="color:#000; text-decoration:none;" href="/apps/help-center">Ask a question <i style="font-size:10px;" class="fa fa-chevron-right"></i></a></span></div>
-
-<div style="max-width:300px; font-size:13px; display:inline-block; margin-top:10px;"><span style="float:left; display:flex; margin-bottom: 0px; margin-left: 0rem; padding: 0;"><i style="font-size:25px; color:#0b76e0;" class="fa fa-question-circle"></i></span>
-<span style="margin-top:0px; margin-left:0.5rem; margin-right:10px; float:right;"><b>New to vaping?</b><br><a style="color:#000; text-decoration:none;" href="/blogs/news">Read our guides <i style="font-size:10px;" class="fa fa-chevron-right"></i></a></span></div>
+<div class="pdp-guide">
+  <a href="/blogs/news">
+    <span class="ic"><i class="fa fa-question-circle"></i></span>
+    <span>New to vaping?<small>Read our beginner guides</small></span>
+  </a>
+  <a href="/apps/help-center">
+    <span class="ic"><i class="fa fa-comment-dots"></i></span>
+    <span>Need advice?<small>Ask our team a question</small></span>
+  </a>
 </div>
 
         
@@ -440,6 +477,7 @@
         <h2>Description</h2>
         {{ readmore_split[0] }}
       {% render 'related-description' %}
+      {% render 'product-flavour-notes' %}
       </div>
     {% endif %}
   {% endif %}

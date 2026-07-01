@@ -247,3 +247,116 @@
   color: #fff;
   text-decoration: underline;
 }
+
+/* =====================================================================
+   Mockup feature styling (pure-ice-menthol-page.html) — current
+   brand colours (#0b76e0) and theme fonts kept throughout.
+   ===================================================================== */
+
+/* Status row: stock pill + dispatch countdown */
+.product--container .pdp-statusrow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin: 10px 0 4px;
+}
+.product--container .pdp-statusrow .instockproduct { margin: 0; }
+.product--container .pdp-dispatch { font-size: 13px; color: #36404f; }
+.product--container .pdp-dispatch b { color: #10151f; }
+.product--container .pdp-dispatch .cd { color: #0b76e0; font-weight: 700; }
+
+/* Price box with divider lines */
+.product--container .product-pricing {
+  padding: 14px 0;
+  border-top: 1px solid #f0f2f6;
+  border-bottom: 1px solid #f0f2f6;
+}
+
+/* Deal cards row (offers laid out side by side) */
+.product--container .pdp-deals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+.product--container .pdp-deals .productpageoffer {
+  flex: 1 1 150px;
+  margin: 0;
+}
+
+/* Strength helper box */
+.product--container .pdp-strength-help {
+  margin: 14px 0 0;
+  font-size: 12.5px;
+  color: #36404f;
+  background: #f7f9fc;
+  border: 1px solid #e6e9ef;
+  border-radius: 12px;
+  padding: 11px 13px;
+  line-height: 1.5;
+}
+.product--container .pdp-strength-help b { color: #10151f; }
+
+/* Guide cards (replaces plain advice links) */
+.product--container .pdp-guide {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.product--container .pdp-guide a {
+  flex: 1 1 190px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  border: 1px solid #e6e9ef;
+  border-radius: 12px;
+  padding: 11px 13px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #10151f;
+  background: #fff;
+  text-decoration: none;
+}
+.product--container .pdp-guide a:hover { border-color: #0b76e0; }
+.product--container .pdp-guide .ic {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: #0b76e0;
+  font-size: 15px;
+}
+.product--container .pdp-guide small {
+  display: block;
+  color: #6f7a8a;
+  font-weight: 500;
+  font-size: 11.5px;
+}
+
+/* Panels get a soft shadow like the mockup */
+.product-description,
+.product-specs {
+  box-shadow: 0 10px 30px -12px rgba(16, 21, 31, 0.10);
+}
+
+/* Flavour note chips inside the description panel */
+.product-flavour-notes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+.product-flavour-notes span {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0b76e0;
+  background: rgba(11, 118, 224, 0.08);
+  padding: 6px 12px;
+  border-radius: 20px;
+}

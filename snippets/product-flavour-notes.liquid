@@ -1,0 +1,19 @@
+{% comment %}
+  Flavour-note chips derived from the product's flavour tags.
+  Renders nothing if the product has no matching flavour tags.
+{% endcomment %}
+{%- assign flavour_set = ',fruit,fruits,fruity,menthol,ice,iced,ice-menthol,menthol-ice,dessert,desserts,drinks,drink,beverage,beverages,sweets,sweet,candy,tobacco,other,bakery,custard,mint,cereal,coffee,nuts,sour,cola,energy,' -%}
+{%- assign chips = '' -%}
+{%- for t in product.tags -%}
+  {%- assign th = t | handle -%}
+  {%- assign needle = ',' | append: th | append: ',' -%}
+  {%- if flavour_set contains needle -%}
+    {%- assign chips = chips | append: '~~' | append: t -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- assign chips = chips | remove_first: '~~' | split: '~~' -%}
+{%- if chips.size > 0 and chips.first != blank -%}
+  <div class="product-flavour-notes">
+    {%- for c in chips -%}<span>{{ c }}</span>{%- endfor -%}
+  </div>
+{%- endif -%}

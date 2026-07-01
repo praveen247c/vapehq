@@ -1,0 +1,17 @@
+{% comment %}
+  Plain-language nicotine strength guidance, shown only for e-liquid /
+  nic-salt products (detected from tags). Keeps theme colours.
+{% endcomment %}
+{%- assign is_eliquid = false -%}
+{%- for t in product.tags -%}
+  {%- assign th = t | handle -%}
+  {%- if th == 'e-liquid' or th == 'e-liquids' or th == 'nicotine-salt' or th == 'nic-salt' or th == 'nicotine-salts' -%}
+    {%- assign is_eliquid = true -%}
+    {%- break -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- if is_eliquid -%}
+  <div class="pdp-strength-help">
+    <b>Not sure which strength?</b> Light / social smoker &rarr; 3&ndash;6mg &middot; around 10-a-day &rarr; 10&ndash;12mg &middot; 20-a-day &rarr; 18&ndash;20mg.
+  </div>
+{%- endif -%}
