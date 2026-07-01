@@ -71,12 +71,55 @@
 /* Variant options are already rendered as pills by the theme
    (.option-value-name); no extra wrapper border here or it doubles up. */
 
-/* ---- Add-to-cart + quantity row ---- */
+/* ---- Add-to-cart + quantity ---- */
 .product--container .product-form--atc {
   margin-top: 16px;
 }
+.product--container .product-form--atc-qty {
+  margin-bottom: 12px;
+}
+/* Unified quantity stepper */
+.product--container .pdp-stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1.6px solid #d7dce3;
+  border-radius: 12px;
+  overflow: hidden;
+  width: auto;
+  background: #fff;
+}
+.product--container .pdp-step-btn {
+  border: 0;
+  background: #fff;
+  width: 46px;
+  height: 50px;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: #36404f;
+  padding: 0;
+}
+.product--container .pdp-step-btn:hover { background: #f6f8fb; }
+.product--container .pdp-qty-input {
+  width: 48px;
+  height: 50px;
+  border: 0;
+  border-radius: 0;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 0;
+  margin: 0;
+  background: #fff;
+  box-shadow: none;
+}
+.product--container .pdp-qty-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+/* Add to cart, full width below the stepper */
 .product--container .product-form--atc-button {
-  border-radius: 10px;
+  border-radius: 12px;
 }
 
 /* ---- Multibuy / deal buttons grouped neatly ---- */

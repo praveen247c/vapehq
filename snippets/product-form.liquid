@@ -639,29 +639,20 @@
           {% render 'icon-chevron-down-small' %}
         </div>
       </div>{% endcomment %}
-      <div class="form-field form-field--qty-input visible" style="width: 9.1875rem;">{% comment %}hidden{% endcomment %}
-        <div style="position: relative; width: 100%; margin-bottom: -11px;">
-          <button type="button" class="product-form--atc-button" style="display: inline-block; width: 30px; margin-right: 5px; margin-left: -5px;" onclick="var qty = document.getElementById('product-quantity-input'); if(qty.value > 0) {qty.value = parseInt(qty.value) - 1;}">-</button>
-          <div style="display: inline-block; position: absolute;">
-          <input
-            id="product-quantity-input"
-            class="form-field-input form-field-number form-field-filled"
-            value="1"
-            name="quantity"
-            type="text"
-            pattern="\d*"
-            aria-label="{{ 'general.general.quantity' | t }}"
-            data-quantity-input
-            style="width: calc(100% - 35px);"
-          >
-          <label
-            for="product-quantity-input"
-            class="form-field-title"
-          >
-            {{ 'general.general.quantity' | t }}
-          </label>
-      </div>
-      <button type="button" class="product-form--atc-button" style="float:right; width: 30px;" onclick="var qty = document.getElementById('product-quantity-input'); qty.value = parseInt(qty.value) + 1;">+</button></div>
+      <div class="form-field form-field--qty-input visible pdp-stepper">
+        <button type="button" class="pdp-step-btn" aria-label="Decrease quantity" onclick="var qty = document.getElementById('product-quantity-input'); if(qty.value > 1) {qty.value = parseInt(qty.value) - 1;}">&minus;</button>
+        <input
+          id="product-quantity-input"
+          class="form-field-input form-field-number form-field-filled pdp-qty-input"
+          value="1"
+          name="quantity"
+          type="text"
+          pattern="\d*"
+          inputmode="numeric"
+          aria-label="{{ 'general.general.quantity' | t }}"
+          data-quantity-input
+        >
+        <button type="button" class="pdp-step-btn" aria-label="Increase quantity" onclick="var qty = document.getElementById('product-quantity-input'); qty.value = parseInt(qty.value) + 1;">+</button>
       </div>
     </div>
   {% comment %}or product.id == 7712487243869{% endcomment %}
@@ -670,7 +661,7 @@
       type="submit"
       {% if selected_variant and selected_variant.available == false %}disabled{% endif %}
       data-product-atc
-      style="width: 9.1875rem; float: right;"
+      style="width: 100%;"
     >
       <span class="atc-button--text">
         {% unless selected_variant and selected_variant.available == false %}
