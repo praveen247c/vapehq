@@ -611,6 +611,7 @@
 
 
   <div class="product-form--atc">
+    <div class="pdp-buyrow">
     <div class="product-form--atc-qty form-fields--qty" data-quantity-wrapper>
       {% comment %}
       <div class="form-field form-field--qty-select">
@@ -661,7 +662,7 @@
       type="submit"
       {% if selected_variant and selected_variant.available == false %}disabled{% endif %}
       data-product-atc
-      style="width: 100%;"
+      style="min-width: 160px;"
     >
       <span class="atc-button--text">
         {% unless selected_variant and selected_variant.available == false %}
@@ -674,6 +675,7 @@
         {%- render 'icon-spinner' -%}
       </span>
     </button>
+    </div>
     {% if product %}
   {% assign variant_sku_values = product.variants | map: 'sku' %}
   {% assign sku_values = variant_sku_values | uniq | join: ';' %}

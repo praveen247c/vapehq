@@ -75,8 +75,21 @@
 .product--container .product-form--atc {
   margin-top: 16px;
 }
-.product--container .product-form--atc-qty {
-  margin-bottom: 12px;
+/* Stepper + Add to cart on one row */
+.product--container .pdp-buyrow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 4px;
+}
+.product--container .pdp-buyrow .product-form--atc-qty {
+  margin: 0;
+  flex: 0 0 auto;
+}
+.product--container .pdp-buyrow [data-product-atc] {
+  flex: 1 1 auto;
+  min-height: 54px;
+  margin: 0;
 }
 /* Unified quantity stepper */
 .product--container .pdp-stepper {
