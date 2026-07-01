@@ -134,18 +134,31 @@
   margin: 0 0 12px;
 }
 
-/* Specifications table rows */
-.product-specs table { width: 100%; border-collapse: collapse; }
-.product-specs th,
-.product-specs td {
-  text-align: left;
-  padding: 9px 0;
-  border-bottom: 1px solid var(--pdp-line-2, #e8ebef);
-  font-weight: 400;
+/* Specifications table rows — only horizontal dividers, no grid/box.
+   Scoped under .product--container to override the theme's .rte table borders. */
+.product--container .product-specs table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 0;
 }
-.product-specs th { color: var(--pdp-muted, #6b7280); width: 42%; }
-.product-specs tr:last-child th,
-.product-specs tr:last-child td { border-bottom: 0; }
+.product--container .product-specs table th,
+.product--container .product-specs table td {
+  text-align: left;
+  padding: 10px 0;
+  border: 0;
+  border-bottom: 1px solid #e8ebef;
+  font-weight: 400;
+  background: none;
+}
+.product--container .product-specs table th {
+  color: #6f7a8a;
+  width: 42%;
+  font-weight: 600;
+}
+.product--container .product-specs table tr:last-child th,
+.product--container .product-specs table tr:last-child td {
+  border-bottom: 0;
+}
 
 /* Keep the description readable width on very wide screens */
 @media screen and (min-width: 1024px) {
