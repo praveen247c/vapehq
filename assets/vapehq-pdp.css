@@ -123,6 +123,34 @@
   margin-top: 22px;
 }
 
+/* Description + Specifications side by side */
+.product-desc-specs-row {
+  display: flex;
+  gap: 22px;
+  align-items: flex-start;
+  margin-top: 22px;
+}
+.product-desc-specs-row > .product-description,
+.product-desc-specs-row > .product-specs {
+  margin-top: 0;
+}
+.product-desc-specs-row > .product-description {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.product-desc-specs-row > .product-specs {
+  flex: 0 0 360px;
+}
+@media screen and (max-width: 768px) {
+  .product-desc-specs-row {
+    flex-direction: column;
+  }
+  .product-desc-specs-row > .product-specs {
+    flex-basis: auto;
+    width: 100%;
+  }
+}
+
 .product-description > h2,
 .product-specs > h2,
 .product-recommendations--title {

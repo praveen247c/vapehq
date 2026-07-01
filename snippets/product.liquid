@@ -414,6 +414,7 @@
 
 {% comment %} Description + Specifications — full width, below the buy area (product page) {% endcomment %}
 {% unless is_product_modal %}
+  <div class="product-desc-specs-row">
   {% if multiTab.size > 1 %}
     <script>
       var Plus = '<i class="fa-solid fa-plus"></i>',
@@ -444,6 +445,7 @@
   {% endif %}
 
   {% render 'product-spec-table' %}
+  </div>
 {% endunless %}
 
 {% if readmore_split[1] != blank and hide_description != true and is_product_modal != true %}
