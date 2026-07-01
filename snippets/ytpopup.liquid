@@ -1,0 +1,63 @@
+<style>
+.ytpage {
+    position: relative;
+    height:100%;
+}
+
+.ytpopup {
+    position:absolute;
+    z-index:2;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.7);
+    opacity:0;
+    visibility:hidden;
+    transition:.3s ease;
+}
+
+.ytshow-popup .ytpopup {
+    opacity:1;
+    visibility: visible;    
+}
+
+.ytpopup > iframe {
+    position:absolute;
+    top:50px;
+    left:50%;
+    margin-left:-280px;
+}
+</style>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<div class="ytpage">
+    <p><a href="#media-popup" data-media="//www.youtube.com/embed/YoXa2Pl7Hk0">click me</a></p>
+    
+    <div class="ytpopup" id="media-popup">
+        <iframe width="560" height="315" src="" frameborder="0" allowfullscreen></iframe>
+    </div>
+</div>
+<script>
+$("[data-media]").on("click", function(e) {
+    e.preventDefault();
+    var $this = $(this);
+    var videoUrl = $this.attr("data-media");
+    var popup = $this.attr("href");
+    var $popupIframe = $(popup).find("iframe");
+    
+    $popupIframe.attr("src", videoUrl);
+    
+    $this.closest(".ytpage").addClass("ytshow-popup");
+});
+
+$(".ytpopup").on("click", function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    $(".ytpage").removeClass("ytshow-popup");
+});
+
+$(".popup > iframe").on("click", function(e) {
+    e.stopPropagation();
+});
+</script>

@@ -1,0 +1,62 @@
+<style>
+.scrolling-wrapper {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  }
+.scrolling-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrolling-wrapper {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+</style>
+<div style="margin-top:10px;">
+  <div align="center" style="margin-bottom:10px;">
+
+    <i class="fa fa-chevron-right" id="btn-right" style="float:right; margin-left:5px; line-height:2.6; color:#0b76e0;" aria-hidden="true"></i>
+    <i class="fa fa-chevron-left" id="btn-left" style="float:left; margin-right:5px; line-height:2.6; color:#0b76e0;" aria-hidden="true"></i>
+  <div class="scrolling-wrapper" id="scroller" style="margin-top:10px;">
+    
+<a style="text-decoration:none;" href="{{ collection.url }}"><span class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        ALL FLAVOURS
+  </span></a>
+&nbsp;    
+<a style="text-decoration:none;" href="{{ collection.url }}/Bar-Salts"><span id="barsaltsselector" class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        BAR SALTS
+  </span></a>
+ 
+<a style="text-decoration:none;" href="{{ collection.url }}/Exotic-Salts"><span id="exoticsaltsselector" class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        EXOTIC SALTS
+  </span></a>
+ 
+<a style="text-decoration:none;" href="{{ collection.url }}/Tobacco-Salts"><span id="tobaccosaltsselector" class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        TOBACCO SALTS
+  </span></a>
+ 
+<a style="text-decoration:none;" href="{{ collection.url }}/Iconic-Salts"><span id="iconicsaltsselector" class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        ICONIC SALTS
+  </span></a>
+ 
+<a style="text-decoration:none;" href="{{ collection.url }}/Mint-Salts"><span id="mintsaltsselector" class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        MINT SALTS
+  </span></a>
+ 
+<a style="text-decoration:none;" href="{{ collection.url }}/Iconic-Freebase"><span id="iconicfreebaseselector" class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        ICONIC 50-50
+  </span></a>
+ 
+<a style="text-decoration:none;" href="{{ collection.url }}/Exotic-Freebase"><span id="exoticselector" class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        EXOTIC 50-50
+  </span></a>
+ 
+<a style="text-decoration:none;" href="{{ collection.url }}/Mint-Freebase"><span id="mintfreebaseselector" class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        MINT 50-50
+  </span></a>  
+    
+</div>
+</div>
+</div>

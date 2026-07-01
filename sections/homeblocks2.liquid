@@ -1,0 +1,110 @@
+<div 
+     data-placement_fullwidth="{%- if section.settings.placement_fullwidth -%}1{%- else -%}0{%- endif -%}"
+     id="custom-widget-{{section.id}}" class="custom-widget-wrapper{%- if section.settings.visible_on_mobile == false -%}{{" hidden-xs"}}{%- endif-%}" data-section-id="{{ section.id }}" data-section-type="custom-widget">
+  	{%- for block in section.blocks -%}
+      <div class="custom-widget" {{ block.shopify_attributes }}>
+        {%- if block.type == 'custom_html' -%}
+  <div align="center" style="margin-top:20px;">
+    <div class="homebannerparent">
+
+      <!-- First Image Block -->
+      <div class="homebanner-blocks">
+        <a href="/collections/starter-vape-kits">
+          <img src="https://cdn.shopify.com/s/files/1/2600/2254/files/Categories_Desktop_Kits.jpg?v=1732190428" class="homebannerimg">
+        </a>
+      </div>
+
+      <!-- Second Image Block -->
+      <div class="homebanner-blocks">
+        <a href="/collections/10ml-e-liquid">
+          <img src="https://cdn.shopify.com/s/files/1/2600/2254/files/Categories_Desktop_Liquid.jpg?v=1732190427" class="homebannerimg">
+        </a>
+      </div>
+    </div>
+          {%- else -%}
+        	{{pages[block.settings.page_content].content}}
+{%- endif -%}
+      </div>
+    {%- endfor -%}
+</div>
+{% schema %}
+{
+  "name": "Home Blocks",
+  "class": "index-section section-wrapper",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "placement_fullwidth",
+      "label": "Force Full Width"
+    },
+    {
+      "type": "checkbox",
+      "id": "visible_on_mobile",
+      "label": "Display on Mobile"
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_image_1",
+      "label": "Desktop Image for First Block"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image_1",
+      "label": "Mobile Image for First Block"
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_image_2",
+      "label": "Desktop Image for Second Block"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image_2",
+      "label": "Mobile Image for Second Block"
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_image_3",
+      "label": "Desktop Image for Third Block"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image_3",
+      "label": "Mobile Image for Third Block"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "custom_html",
+      "name": "Custom HTML",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "html_content",
+          "label": "HTML Content",
+          "info": "[How to use?](https://youtu.be/s7s8hWXVxGE)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home Blocks",
+      "category": "Content",
+      "settings": {
+        "placement_fullwidth": true,
+        "visible_on_mobile": true
+      },
+      "blocks": [
+        {
+          "type": "custom_html",
+          "settings": {
+            "html_content": "<div style='text-align: center;'><h1>This is sample HTML 2</h1></div>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

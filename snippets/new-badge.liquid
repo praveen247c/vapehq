@@ -1,0 +1,9 @@
+{% assign this_prod = this_product %}
+{% assign start = this_prod.published_at | date: '%s' %}
+{% assign end = 'now' | date: '%s' %}
+{% assign difference = end | minus: start %}
+    {% assign diffdays = difference | divided_by: 86400 %}
+    {% if diffdays < 45 %}
+<div style="background-color:#0b76e0; max-width:200px; display:inline-block; position:absolute; right:0; margin-top:5px; font-size:11px; z-index:50; color:#FFF; padding:5px; font-weight:bold;">NEW</div>
+    {% endif %}
+

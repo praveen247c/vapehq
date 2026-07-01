@@ -1,0 +1,16 @@
+{% assign tag_limit = filter_limit | times: 1 %}
+
+{% comment %}
+  Collection filters.
+
+  VapeHQ uses auto-grouped filters built from the collection's real tags +
+  vendors (see product-grid-auto-groups). The legacy "tags"/"groups" styles
+  relied on a GROUP_value tag convention this store doesn't use.
+{% endcomment %}
+{% if collection.all_tags.size > 0 and filter_style != 'none' %}
+  <div class="productgrid--sidebar-section" data-productgrid-filters-content>
+    <nav aria-label="Collection filters">
+      {% render 'product-grid-auto-groups', tag_limit: tag_limit %}
+    </nav>
+  </div>
+{% endif %}

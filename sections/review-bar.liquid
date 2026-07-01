@@ -1,0 +1,102 @@
+<style>
+  @media only screen and (max-width: 499px){
+    .jafd-l {
+      text-align: center;
+      display: block;
+    }
+    .jafd-l img {
+      float: none;
+    }
+    .jafd-r {
+      text-align: center;
+      display: block;
+    }
+  }
+  @media only screen and (min-width: 500px){
+    .jafd-l {
+      width: calc(50% - 2px); 
+      display: inline-block; 
+      margin-left: auto;
+    }
+    .jafd-l img {
+      float: right;
+    }
+    .jafd-r {
+      width: calc(50% - 2px) !important; 
+      display: inline-block; /*margin-left: auto;*/ 
+      margin-right: auto; 
+      margin-top: 3px;
+    }
+  }
+</style>
+<div class="jafd-l">
+  <img src="https://cdn.shopify.com/s/files/1/2600/2254/files/image_2025-11-27_094900916.png?v=1764236945" style="height: 48px; width: auto;">
+</div>
+<div class="jafd-r">
+  <div class="lipscore-service-review-badge-small-short" 
+      data-ls-widget-height="45px"
+      data-ls-widget-width="300px">
+  </div>
+</div>
+{% schema %}
+  {
+    "name": "Review Bar",
+	"class": "index-section section-wrapper",
+	"max_blocks": 12,
+    "settings": [
+	  {
+        "type": "checkbox",
+        "id": "placement_fullwidth",
+        "label": "Force Full Width"
+      },
+      {
+        "type": "checkbox",
+        "id": "visible_on_mobile",
+        "label": "Display on Mobile"
+      }
+	],
+	"blocks": [
+      {
+		"type": "custom_html",
+        "name": "Custom HTML",
+        "settings": [
+          {
+			"type": "textarea",
+            "id": "html_content",
+            "label": "HTML Content",
+            "info": "[How to use?](https:\/\/youtu.be\/s7s8hWXVxGE)"
+		  }
+		]	
+      },
+	  {
+		"type": "content_page",
+        "name": "Page Content",
+        "settings": [
+          {
+            "type": "page",
+            "id": "page_content",
+            "label": "Choose a Page"
+          }
+		]	
+      }
+	],
+    "presets": [
+      {
+        "name": "Review Bar",
+        "category": "Content",
+        "settings": {
+		  "placement_fullwidth": true,
+          "visible_on_mobile": true
+        },
+        "blocks": [
+          {
+            "type": "custom_html",
+			"settings": {
+				"html_content": "<div style='text-align: center;'><h1>This is sample HTML</h1></div>"
+			}
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

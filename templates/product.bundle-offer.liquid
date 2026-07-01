@@ -1,0 +1,514 @@
+{% assign cartTotal = cart.total_price  | times: 1.2 %}
+{% capture day %}{{ "now" | date: "%a" }}{% endcapture %}
+{% capture hour %}{{ "now" | date: "%H" }}{% endcapture %}
+{% assign hour = hour | plus: 0 %}
+{% assign weekdayDelivery = 1999 %}
+{% assign weekendDelivery = 4000 %}
+{% if hour >= 16 %}
+  {% assign timeofday = "after" %}
+{% else %}
+  {% assign timeofday = "before" %}
+{% endif %}
+{% if cartTotal >= weekendDelivery %}
+  {% assign delivery = "weekend" %}
+{% else %}
+  {% if cartTotal < weekendDelivery and cartTotal >= weekdayDelivery %}
+    {% assign delivery = "weekday" %}
+  {% endif %}
+{% endif %}
+{% case day %}
+  {% when "Thur" %}
+    {% if timeofday == "before" %}
+      {% assign deliveryAmount = weekdayDelivery %}
+    {% else %}
+      {% assign deliveryAmount = weekendDelivery %}
+    {% endif %}
+{% when "Fri" %}
+  {% assign deliveryAmount = weekendDelivery %}
+{% when "Sat" %}
+{% else %}
+{% assign deliveryAmount = weekdayDelivery %}
+{% endcase %}
+{% assign javaScriptAmount = deliveryAmount | money_without_currency %}      
+{% render 'breadcrumbs' %}
+
+{% assign enable_swatches = settings.swatches_enable %}
+{% assign swatches_shape = settings.swatches_shape %}
+{% assign swatches_option_trigger = settings.swatches_swatch_trigger %}
+{% assign swatches_option_style = settings.swatches_option_style %}
+{% assign swatches_product_page_size = settings.swatches_product_page_size %}
+{% assign swatches_custom_colors = settings.swatches_custom_colors %}
+{% assign select_main_classes = 'form-options' %}
+{% assign radios_classes = 'form-options form-options-selectable-boxes' %}
+{% assign option_header_classes = 'option-header' %}
+{% assign option_name_classes = 'option-name' %}
+{% assign option_values_classes = 'option-values' %}
+{% assign option_value_classes = 'option-value' %}
+{% assign option_value_label_classes = 'option-value-label' %}
+{% assign option_value_input_classes = 'option-value-input' %}
+{% assign option_value_name_classes = 'option-value-name' %}
+{% assign swatches_classes = 'form-options form-options-swatches' %}
+{% assign option_swatch_wrapper_classes = 'option-value-name option-value-swatch-wrapper' %}
+{% assign option_swatch_classes = 'swatch' %}
+{% assign option_swatch_inner_classes = 'swatch-inner' %}
+
+{% if product %}<!--{{ product.title }}-->
+  <style>
+    .collectionHeader {
+      max-width: 1400px; 
+      margin-left: auto; 
+      margin-right: auto; 
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .collectionHeader img {
+      width: 100%;
+    }
+    .bundleHolder {
+      width: 100vw; 
+      margin-left: auto; 
+      margin-right: auto;
+    }
+    .bundleBuffer {
+      text-align: center;
+    }
+    .mainProductHolder {
+      border: #f2f2f2 1px solid; 
+      margin-bottom: 10px;
+    }
+    .mainProductHolder img {
+      width: calc(33.333333% - 1px); 
+      float: left;
+    }
+    .productDetails {
+      float: right; 
+      width: calc(66% - 1px);
+    }
+    .productDetails h2 {
+      margin-top: 40px;
+      width: calc(100% - 100px); 
+      float: left;
+    }
+    .productDetailsPrice {
+      margin-top: 40px;
+      margin-right: 10px;
+      width: fit-content; 
+      float: right;
+      font-weight: bold;
+    }
+    .productDescription {
+      height: 250px; 
+      overflow-y: auto;
+    }
+    .buttonHolder {
+      text-align: right; 
+      margin-bottom: 10px;
+    }
+    .buttonHolder button {
+      width: fit-content; 
+      padding-left: 10px; 
+      padding-right: 10px; 
+      background-color: grey;
+    }
+    .bottleChoice {
+      display: inline-block;
+      /*float: left;*/
+      text-align: center;
+      border: #f2f2f2 1px solid; 
+      margin-bottom: 20px;
+    }
+    .bottleChoice select {
+      margin-bottom: 10px;
+    }
+    .atc--product-image {
+      width: 400px !important;
+    }
+    .atc--product-image img {
+      display: inline-block;
+      width: 100px;
+    }
+    @media screen and (min-width: 1024px) {
+      .bottleChoice {
+        width: calc({{ 100 | divided_by: product.metafields.bundle_options.no_of_freebies }}% - {{ product.metafields.bundle_options.no_of_freebies | times: 3 }}px);
+      }
+      .bottleChoice img {
+        width: unset;
+        max-width: calc(calc(1400px / 3) - 25px);
+      }
+      .bottleChoice select {
+        max-width: unset;
+      }
+      .productDescription {
+        display: block;
+      }
+      .bundleHolder {
+        max-width: 1400px;
+      }
+      .desktopBanner{
+        display: block;
+      }
+      .mobileBanner{
+        display: none;
+      }
+    }
+    @media screen and (max-width: 1023px) {
+      .bottleChoice {
+        width: calc(50% - 12px);
+      }
+      .bottleChoice img {
+        width: 100%;
+        max-width: 100%;
+      }
+      .bottleChoice select {
+        max-width: 100%;
+      }
+      .productDescription {
+        /*display: none;*/
+      }
+      .bundleHolder {
+        max-width: calc(100vw - 20px);
+      }
+      .desktopBanner{
+        display: none;
+      }
+      .mobileBanner{
+        display: block;
+      }
+    }
+  </style>
+  <script>
+    {% assign weBeQsalts = 'false' %}
+    {% for qsalt in collections[product.metafields.bundle_options.collection].products %}{% for variant in qsalt.variants %}{% if variant.option2 %}{% assign weBeQsalts = 'true' %}{% break %}{% endif %}{% endfor %}{% if weBeQsalts == 'true' %}{% break %}{% endif %}{% endfor %}
+    var productIDs = {
+        {% for qsalt in collections[product.metafields.bundle_options.collection].products %}{{ qsalt.id }}:{ {% for variant in qsalt.variants %}{% if variant.option2 %}{% if variant.option2 == "Single" %}'{{ variant.option1 }}':{"id": {{ variant.id }},"available": {{ variant.inventory_quantity }}},{% endif %}{% else %}'{{ variant.option1 }}':{"id": {{ variant.id }},"available": {{ variant.inventory_quantity }}},{% endif %}{% endfor %}},
+        {% endfor %}
+    };
+    function checkAll(){
+      var checked = 0;
+      ["mainProduct", {% for blah in (1..product.metafields.bundle_options.no_of_freebies) %}"bottleChoice{{ blah }}Select"{% if forloop.last %}{% else %}, {% endif %}{% endfor %}].forEach(function(elem){if($('#' + elem).val() != ""){checked += 1; console.log($('#' + elem).val());}});
+      if (checked == {{ product.metafields.bundle_options.no_of_freebies | plus: 1}}){
+        $('#buyButton').css('background-color', "#0B76E0");
+        document.getElementById('buyButton').disabled = false;
+      }
+    }
+    function addToBasket(){
+      var products = [];
+      products.push({"id": parseInt($('#mainProduct').val()), "quantity": 1});
+      [{% for blah in (1..product.metafields.bundle_options.no_of_freebies) %}"bottleChoice{{ blah }}Select"{% if forloop.last %}{% else %}, {% endif %}{% endfor %}].forEach(function(elem){if($('#' + elem).val() != ""){products.push({"id": productIDs[$('#' + elem + "or").val()][$('#' + elem).val()]['id'], "quantity": 1});}});
+      console.log(products);
+      onTheFlyAddToCartNew(products);
+    }
+    async function onTheFlyAddToCartNew(order) {
+      const result = await fetch("/cart/add.json", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          items: order
+        })
+      })
+      console.log(result);
+      switch (result.status){
+        case 200:
+          alert("We've added your Bundle to your Basket for you");
+          showBasketNotification();
+          break;
+        case 400:
+          alert('Looks like Chris broke something!');
+          break;
+        default:
+          alert("It looks like there's a problem with one of the items in your basket, please choose something else.");
+          break;
+      }
+    }
+    function showBasketNotification() {
+      var temp = document.getElementsByClassName("site-header-cart--count");
+      var temp2 = temp[0].getAttribute('data-header-cart-count');
+      if (temp2 == ""){temp2 = 0;}
+      temp[0].setAttribute('data-header-cart-count', parseInt(temp2) + {{ product.metafields.bundle_options.no_of_freebies | plus: 1 }});
+      temp[0].classList.add("visible");
+      $('#cartDrawerCount').html(parseInt(temp2) + {{ product.metafields.bundle_options.no_of_freebies | plus: 1 }});
+      var price = parseFloat(document.getElementById('bundleOfferPrice').innerHTML.replace("£",""));
+      console.log(price);
+      console.log(parseFloat({{ cartTotal }}));
+      console.log((parseFloat({{ javaScriptAmount }}) - (price + (parseFloat({{ cartTotal }}) / 100))).toFixed(2));
+      if((parseFloat({{ javaScriptAmount }}) - (price + (parseFloat({{ cartTotal }}) / 100))) > 0){
+        $('#amountRemainingNew').html("£" + (parseFloat({{ javaScriptAmount }}) - (price + (parseFloat({{ cartTotal }}) / 100))).toFixed(2));
+      }
+      else {
+        if(parseFloat({{ javaScriptAmount }}) == 40.0){
+          $('#amountRemainingNewOuter').html("You qualify for FREE Next Day Shipping.");
+        }
+        else {
+          $('#amountRemainingNewOuter').html("You qualify for FREE Next Working Day Shipping.");
+        }
+      }
+      $('#deliveryProgressNew').css("width", (((((parseFloat({{ javaScriptAmount }}) - (price + (parseFloat({{ cartTotal }}) / 100))) - parseFloat({{ javaScriptAmount }})) * -1 ) / parseFloat({{ javaScriptAmount }})) * 100) + "%");
+      $('.atc-banner--container').css({
+        'display' : 'block',
+        'opacity' : '1',
+        'position' : 'fixed',
+        'z-index': '1000',
+        'top' : '-410px',
+        'transition' : '1s',
+        'transform': 'translateY(0%)'
+      });
+      setTimeout(function(){
+        $('.atc-banner--container').css({
+          'top' : '0px'
+        });
+        setTimeout(function(){
+          $('.atc-banner--container').css('top', '-400px');
+          setTimeout(function(){
+            $('.atc-banner--container').css({
+              'transition' : '0s',
+              'display' : 'none',
+              'position' : 'absolute',
+              'opacity' : '0',
+              'z-index': '600',
+              'transform': 'translateY(-100%)'
+            });
+          }, 500)
+        }, 5000);
+      }, 500);
+    }
+  </script>
+<div class="collectionHeader">
+  <img src="{{ product.metafields.bundle_options.desktop_banner | image_url }}" class="desktopBanner">
+  <img src="{{ product.metafields.bundle_options.mobile_banner | image_url }}" class="mobileBanner">
+</div>
+<div class="bundleHolder">
+  <div class="mainProductHolder">
+    <img id="productImage" src="{{ product.images[0].src | product_img_url: 'grande' }}" >
+    <div class="productDetails">
+      <h2>{{ product.title }}</h2><div id="bundleOfferPrice" class="productDetailsPrice">£{{ product.price | times: 1.2 | money_without_currency }}</div><div style="clear: both;"></div>
+      <div class="productDescription">{{ product.description }}</div>
+      <div class="variants-ui {% if enable_swatches and swatches_shape == 'square' and swatches_option_style == 'variant_image'%} variants-ui--swatches-square{% endif %}" data-variants-ui>
+        <select class="variants-ui__select-main {{ select_main_classes }}" id="mainProduct" name="id" {{ hide_select_a11y }} data-variants onchange="console.log(this.value);">
+          <option value="" disabled {% if selected_variant %}selected{% endif %}>
+              {{ 'product.variants.choose_variant' }}
+          </option>
+          {% for variant in product.variants %}
+          <option {% comment %}{% if selected_variant and selected_variant.id == variant.id %}selected{% endif %}{% endcomment %} value="{{ variant.id }}" {% unless variant.available %}disabled{% endunless %} data-variant-img="{{ variant.image.src | product_img_url: 'grande' }}" data-variant-id="{{ variant.id }}" data-sku="{{ variant.sku }}">
+              {{ variant.title }}
+          </option>
+          {% endfor %}
+        </select>
+    
+      {% for option in product.options_with_values %}
+        {% assign option_index = forloop.index0 %}
+        {% assign show_swatches = false %}
+        {% if enable_swatches %}
+          {%- assign swatches_option_trigger = swatches_option_trigger | strip | downcase -%}
+          {%- assign option_name = option.name | strip | downcase -%}
+          {% if option_name == swatches_option_trigger %}
+            {% assign show_swatches = true %}
+            {% assign swatch_option_key = 'option' | append: forloop.index %}
+          {% endif %}
+        {% endif %}
+        <fieldset class="{% unless show_swatches %}variants-ui__radios {% if forloop.first %}variants-ui__radios--first{% endif %} {% if forloop.last %}variants-ui__radios--last{% endif %}{{ radios_classes }}{% else %}variants-ui__swatches {{ swatches_classes }} {% if forloop.first %}variants-ui__swatches--first{% endif %} {% if forloop.last %}variants-ui__swatches--last{% endif %}{% endunless %}">
+          <legend class="variants-ui__option-header {{ option_header_classes }}">
+            <span class="variants-ui__option-name {{ option_name_classes }}" data-variant-option-name="{{ 'product.variants.chosen_option_html' | t: option: option.name, value: option.selected_value | escape }}" data-variant-option-choose-name="{{ 'product.variants.choose_option' | t: option: option.name }}">
+                {% if selected_variant %}
+                  {{ 'product.variants.chosen_option_html' | t: option: option.name, value: option.selected_value }}
+                {% else %}
+                  {{ 'product.variants.choose_option' | t: option: option.name }}
+                {% endif %}
+            </span>
+          </legend>
+          <div class="variants-ui__option-values {{ option_values_classes }}" data-variant-option data-variant-option-index="{{ option_index }}" data-variant-option-chosen-value="{% if selected_variant %}{{ option.selected_value }}{% else %}false{% endif %}">
+            {% for value in option.values %}
+            <div class="variants-ui__option-value {% comment %}{% if selected_variant and option.selected_value == value %}variants-ui__option-value--selected{% endif %}{% endcomment %} {{ option_value_classes }}" data-variant-option-value-wrapper>
+              <label class="variants-ui__option-value-label {{ option_value_label_classes }}" for="{{ section.id }}-form-{{ form_id }}-variant-option-{{ option_index }}-{{ forloop.index0 }}">
+                <input onclick="select = document.querySelector('#mainProduct'); var options = Array.from(select.options); var optionToSelect = options.find(item => item.text === this.value); optionToSelect.selected = true; document.getElementById('productImage').src = optionToSelect.getAttribute('data-variant-img'); document.getElementById('checkoutSwatchMain').src = optionToSelect.getAttribute('data-variant-img'); checkAll();" id="{{ section.id }}-form-{{ form_id }}-variant-option-{{ option_index }}-{{ forloop.index0 }}" class="variants-ui__option-value-input {{ option_value_input_classes }}" type="radio" name="{{ option.name | url_encode }}" value="{{ value | escape }}" tabindex="0" aria-label="{{ value | escape }}" {% comment %}{% if selected_variant and option.selected_value == value %}checked{% endif %}{% endcomment %}data-variant-option-value data-variant-option-value-index="{{ option_index }}" {% for variant in product.variants %}{% if variant.option1 == value %}{% if variant.inventory_quantity == 0 %}data-variant-option-available="false"{% break %}{% endif %}{% endif %}{% endfor %}>
+                <span class="{% unless show_swatches %}variants-ui__option-value-name {{ option_value_name_classes }}{% else %}variants-ui__option-swatch-wrapper {{ option_swatch_wrapper_classes }}{% endunless %}" tabindex="-1" {% if show_swatches %}data-swatch-tooltip="{{ value | escape }}"{% endif %}>
+                  {% unless show_swatches %}
+                    {{ value }}
+                  {% else %}
+                    {% assign use_variant_images = false %}
+                    {% if swatches_option_style == 'variant_image' %}
+                      {% assign use_variant_images = true %}
+                    {% endif %}
+                    {% assign use_aspect_ratio = false %}
+                    {% if swatches_shape == 'square' %}
+                      {% assign use_aspect_ratio = true %}
+                    {% endif %}
+                    {% capture swatch_styles %}
+                      {% assign color_name = value %}
+                      {% assign use_variant_images = use_variant_images %}
+                      {% assign swatch_product = product %}
+                      {% assign swatch_option_key = swatch_option_key %}
+                      {% assign swatch_size = swatches_product_page_size %}
+                      {% assign use_aspect_ratio = use_aspect_ratio %}
+                      {%- capture _ -%}
+                        {%- assign use_variant_images = use_variant_images | default: false -%}
+                        {%- assign swatch_product = swatch_product | default: blank -%}
+                        {%- assign swatch_option_key = swatch_option_key | default: blank -%}
+                        {%- assign swatch_size = swatch_size | default: 32 -%}
+                        {%- assign use_aspect_ratio = use_aspect_ratio | default: true, allow_false: true -%}                       
+                        {%- assign swatch_bg_color = blank -%}
+                        {%- assign swatch_bg_image = blank -%}
+                        {%- assign swatch_bg_variables = blank -%}
+                        {%- assign swatch_colors = swatches_custom_colors -%}
+                        {%- assign swatch_colors = swatch_colors | newline_to_br | strip_newlines | split: '<br />' -%}
+                        {%- assign swatch_search_color = color_name | downcase -%}
+                        {%- for swatch_option in swatch_colors -%}
+                          {%- assign swatch_color = swatch_option | split: ':' -%}
+                          {%- assign swatch_color_name = swatch_color[0] | strip | downcase -%}
+                          {%- assign swatch_color_value = swatch_color[1] | strip -%}
+                          {%- if swatch_search_color == swatch_color_name -%}
+                            {% capture swatch_bg_color %}
+                              background-color: {{ swatch_color_value }};
+                            {% endcapture %}
+                            {%- break -%}
+                          {%- endif -%}
+                        {%- endfor -%}
+                        {%- if swatch_bg_color == blank -%}
+                          {% capture swatch_bg_color %}
+                              background-color: {{ color_name | handleize }};
+                          {% endcapture %}
+                        {%- endif -%}
+                        {%- if use_variant_images and swatch_product != blank and swatch_option_key != blank -%}
+                          {% for variant in swatch_product.variants %}
+                            {% assign option_value_downcased = variant[swatch_option_key] | downcase %}
+                            {% if option_value_downcased == swatch_search_color %}
+                              {% if variant.image != blank %}
+                                {%- assign swatch_image_resolution = swatch_size | times: 2 | prepend: 'x' -%}
+                                {%- assign swatch_file_url = variant.image | img_url: swatch_image_resolution, crop: 'center' -%}
+                                {%- assign swatch_height = swatch_size | times: 1.0 -%}
+                                {%- assign swatch_width = swatch_size | times: 1.0 -%}
+                                {%- if use_aspect_ratio -%}
+                                  {%- assign swatch_width = swatch_size | times: variant.image.aspect_ratio -%}
+                                {%- endif -%}
+                                {%- capture swatch_bg_image -%}
+                                  background-image: url('{{- swatch_file_url  -}}');
+                                  width: {{ swatch_width }}px;
+                                  border: 0; 
+                                {%- endcapture -%}
+                                {%- assign selected_border_offset = 2 | times: 2 -%}
+                                {%- capture swatch_bg_variables -%}
+                                  --swatch-inner-transform-x: {{ swatch_width | minus: selected_border_offset | divided_by: swatch_width }};
+                                  --swatch-inner-transform-y: {{ swatch_height | minus: selected_border_offset | divided_by: swatch_height }};
+                                {%- endcapture -%}
+                              {% endif %}
+                              {%- break -%}
+                            {% endif %}
+                          {% endfor %}
+                        {%- else -%}
+                          {% assign swatch_file_name = color_name | downcase | handleize | append: '.png' %}
+                          {%- if images[swatch_file_name] != blank -%}
+                            {%- capture swatch_image_resolution -%}{{ swatch_size | times: 2 }}x{{ swatch_size | times: 2 }}{%- endcapture -%}
+                            {%- assign swatch_file_url = swatch_file_name | file_img_url: swatch_image_resolution, crop: 'center' -%}
+                            {%- capture swatch_bg_image -%}
+                              background-image: url('{{- swatch_file_url  -}}');
+                            {%- endcapture -%}
+                          {%- endif -%}
+                        {%- endif -%}
+                      {%- endcapture -%}
+                      {{ swatch_bg_color }}
+                      {{ swatch_bg_image }}
+                        /* variables */
+                      {{ swatch_bg_variables }}
+                    {% endcapture %}
+                  <div class="variants-ui__option-swatch {{ option_swatch_classes }}" style="{{ swatch_styles | split: '/* variables */' | last | remove: '/* variables */' }}">
+                    <div class="variants-ui__option-swatch-inner {{ option_swatch_inner_classes }}" style="{{ swatch_styles | split: '/* variables */' | first }}"></div>
+                  </div>
+                  {% endunless %}
+                </span>
+              </label>
+            </div>
+            {% endfor %}
+          </div>
+        </fieldset>
+      {% endfor %}
+      </div>
+    </div>
+    <div style="clear: both;"></div>
+  </div>
+</div>
+<div class="bundleHolder">
+  <div class="bundleBuffer">
+    {% for blah in (1..product.metafields.bundle_options.no_of_freebies) %}
+    <div class="bottleChoice"{% if forloop.last %}{% else %} style="margin-right: 12px;"{% endif %}>
+      <img id="bottleChoice{{ blah }}" src="//cdn.shopify.com/s/files/1/2600/2254/files/image_2025-03-24_101525826.png?v=1742811330"><br>
+      <select id="bottleChoice{{ blah }}Selector" onchange="document.getElementById('bottleChoice{{ blah }}').src = this.options[this.selectedIndex].getAttribute('data'); document.getElementById('checkoutSwatch{{ blah }}').src = this.options[this.selectedIndex].getAttribute('data'); Array.from(document.querySelector('#bottleChoice{{ blah }}Select').options).forEach(function(elem){if(elem.value !=''){if(productIDs[this.value][elem.value]['available'] > 0){elem.disabled = false;}else{elem.disabled = true;}}},this);">
+        <option>Please Choose...</option>
+        {% for qsalt in collections[product.metafields.bundle_options.collection].products %}
+        <option value="{{ qsalt.id }}" data="{{ qsalt.images[0].src | product_img_url: 'medium' }}">{{ qsalt.title }}</option>
+        {% endfor %}
+      </select>
+      <select id="bottleChoice{{ blah }}Select" onchange="checkAll();">
+        <option value="">Please Choose...</option>
+        {% if weBeQsalts == 'true' %}
+          {% for mgs in collections[product.metafields.bundle_options.collection].products[0].variants %}{% if mgs.title contains "Single" %}<option value="{{ mgs.title | replace: " / Single", "" }}">{{ mgs.title | replace: " / Single", "" }}</option>{% endif %}{% endfor %}
+        {% else %}
+          {% for mgs in collections[product.metafields.bundle_options.collection].products[0].variants %}<option value="{{ mgs.title | replace: " / Single", "" }}">{{ mgs.title | replace: " / Single", "" }}</option>{% endfor %}
+        {% endif %}
+      </select>
+    </div>
+    {% endfor %}<div style="clear: both;"></div>
+  </div>
+</div>
+  <div class="bundleHolder buttonHolder" >
+    <button id="buyButton" onclick="addToBasket();" class="product-form--atc-button mdc-ripple-surface mdc-ripple-upgraded" disabled data-product-atc>Add Deal To Basket</button>
+  </div>
+{% endif %}
+
+{% section 'static-recently-viewed' %}
+
+<style>
+  #lipscore-review-list, #lipscore-question-post, #lipscore-question-list {
+    max-width: 1350px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>
+<div class="lipscore-full-widget">
+  <h3 style="max-width: 1400px;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 20px;
+    margin-right: auto;
+    margin-left: auto;">Questions & Answers</h3>
+ 
+  {% if product %}
+    {% assign variant_sku_values = product.variants | map: 'sku' %}
+    {% assign sku_values = variant_sku_values | uniq | join: ';' %}
+    {% assign ls_selected_or_first_variant = product.selected_or_first_available_variant %}
+    {% if product.available %}
+      {% assign ls_availability = 1 %}
+    {% else %}
+      {% assign ls_availability = 0 %}
+    {% endif %}
+    
+    <div id="lipscore-question-post"
+      ls-product-name="{{ product.title }}"
+      ls-brand="{{ product.vendor }}"
+      ls-sku="{{ sku_values }}"
+      ls-product-id="{{ product.id }}"
+      ls-product-url="{{ shop.url }}{{ product.url }}"
+      ls-description="{{ product.description | escape }}"
+      ls-image-url="{{ product | img_url: '1024x1024' | remove: '_1024x1024' }}"
+      ls-price="{{ ls_selected_or_first_variant.price | money_without_currency }}"
+      ls-price-currency="{{ shop.currency }}"
+      ls-availability="{{ ls_availability }}"
+      ls-category="{{ product.type }}">
+    </div>
+    <div id="lipscore-question-list"
+      ls-product-name="{{ product.title }}"
+      ls-brand="{{ product.vendor }}"
+      ls-sku="{{ sku_values }}"
+      ls-product-id="{{ product.id }}"
+      ls-product-url="{{ shop.url }}{{ product.url }}"
+      ls-description="{{ product.description | escape }}"
+      ls-image-url="{{ product | img_url: '1024x1024' | remove: '_1024x1024' }}"
+      ls-price="{{ ls_selected_or_first_variant.price | money_without_currency }}"
+      ls-price-currency="{{ shop.currency }}"
+      ls-availability="{{ ls_availability }}"
+      ls-category="{{ product.type }}"
+      ls-page-size="5">
+    </div> 
+  {% endif %}
+</div>

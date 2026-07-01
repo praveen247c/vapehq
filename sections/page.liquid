@@ -1,0 +1,19 @@
+<a href="https://vapehq.co.uk/pages/reviews" style="color:#000; text-decoration:none;">
+ <div align="center" style=" background-color:#E3E3E3; width:100%; padding:15px">
+<i style="color:#0b76e0;" class="fa fa-star"></i> RATED <b>{{ shop.metafields.judgeme.all_reviews_rating | round: 1 }}</b> OUT OF 5 FROM <b>{{ shop.metafields.judgeme.all_reviews_count }}</b> REVIEWS 
+</div></a>
+<article class="site-page" data-template-page>
+  <header class="page-masthead">
+    <h1 class="page-title">
+      {{ page.title }}
+    </h1>
+  </header>
+
+  {% if page.content != blank %}
+    <div class="page-content rte">
+      {{ page.content }}
+    </div>
+  {% endif %}
+  {% render 'judgeme_widgets', widget_type: 'judgeme_featured_carousel', concierge_install: false %}
+
+</article>

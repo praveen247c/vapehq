@@ -1,0 +1,58 @@
+<style>
+.scrolling-wrapper {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  }
+.scrolling-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrolling-wrapper {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+</style>
+<div style="margin-top:10px;">
+  <div align="center" style="margin-bottom:10px;">
+
+    <i class="fa fa-chevron-right" id="btn-right" style="float:right; margin-left:5px; line-height:2.6; color:#0b76e0;" aria-hidden="true"></i>
+    <i class="fa fa-chevron-left" id="btn-left" style="float:left; margin-right:5px; line-height:2.6; color:#0b76e0;" aria-hidden="true"></i>
+  <div class="scrolling-wrapper" id="scroller" style="margin-top:10px;">
+    
+<a style="text-decoration:none;" href="{{ collection.url }}"><span class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        ALL FLAVOURS
+  </span></a>
+&nbsp;    
+<a style="text-decoration:none;" href="{{ collection.url }}/Fruit"><span id="Fruitselector" class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        FRUIT
+  </span></a>
+ 
+<a style="text-decoration:none;" href="{{ collection.url }}/Menthol"><span id="Mentholselector" class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        MENTHOL
+  </span></a>
+ 
+<a style="text-decoration:none;" href="{{ collection.url }}/Dessert"><span id="Dessertselector" class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        DESSERT
+  </span></a>
+ 
+<a style="text-decoration:none;" href="{{ collection.url }}/Drinks"><span id="Drinksselector" class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        DRINKS
+  </span></a>
+ 
+<a style="text-decoration:none;" href="{{ collection.url }}/Sweets"><span id="Sweetsselector" class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        SWEETS
+  </span></a>
+ 
+<a style="text-decoration:none;" href="{{ collection.url }}/Tobacco"><span id="Tobaccoselector" class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        TOBACCO
+  </span></a>
+ 
+<a style="text-decoration:none;" href="{{ collection.url }}/Other"><span id="Otherselector" class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+        OTHER
+  </span></a>
+    
+</div>
+</div>
+</div>

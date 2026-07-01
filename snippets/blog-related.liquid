@@ -1,0 +1,99 @@
+<style>
+.recommendedcontainer {
+display:inline-block;
+text-align:left;
+}
+.recommendedimage {
+width:75px;
+float:left;
+margin-right:10px;
+border-radius:50px;
+border: 1px solid #0b76e0;
+}
+.recommendedtitle {
+font-size:16px;
+font-weight:bold;
+color:#000;
+}
+.recommendedtext {
+padding: 8px;
+display:inline-block;
+line-height:25px;
+white-space: nowrap;
+overflow: hidden;  
+width:200px;
+text-decoration:none;
+}
+.recommendedprice {
+color:#fff;
+font-weight:bold;
+background-color:#0b76e0;
+padding:3px 6px 3px 6px;
+border-radius:5px;
+display:inline-block;
+font-size:13px;
+margin: 5px 2px 0px 2px;
+}
+.recommendedbutton {
+color:#fff;
+font-weight:bold;
+background-color:#0b76e0;
+padding:3px 6px 3px 6px;
+border-radius:5px;
+display:inline-block;
+font-size:13px;
+margin-top:5px;
+}
+.recommendedreview {
+font-size:12px;
+line-height:15px;
+color:#000;
+}
+.recommendedoutline {
+-webkit-box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.30);
+-moz-box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.30);
+box-shadow: 0px 0px 5px -1px rgba(0,0,0,0.30);
+display:inline-block;
+padding:10px;
+border-radius:3px;
+margin:auto;
+}
+.recommendedcontainer {
+display:inline-block;
+align-items:center;
+margin:10px;
+}
+@media only screen and (max-width: 369px) {
+.recommendedtext {
+width:180px;
+	}
+}
+</style>
+<p style="text-align:center; font-weight:bold; font-size:20px; margin-top:30px;">Products Related To This Article..</p>
+<div style="text-align:center">
+{% assign related_product = article.metafields.related_productblog.product_list.value %}
+   {% if related_product %}
+     {% for related_product in related_product %}
+<div class="recommendedcontainer">
+<div class="recommendedoutline">
+<a href = "{{shop.url | append: "/products/" | append: related_product.handle }}">
+<div class="recommendedcontainer">
+<img src="{{ related_product.featured_image | img_url: 'medium' }}" class="recommendedimage">
+<div class="recommendedtext">
+<div class="recommendedtitle">{{related_product.title}}</div>
+<span class="recommendedreview">{{ related_product.metafields.judgeme.badge }}</span>
+<div class="recommendedprice">{{related_product.price | times: 1.2 | money}}</div> <div style="padding:3px 12px 3px 12px;" class="recommendedprice">VIEW</div>
+</div>
+</div>
+</a>
+</div>
+</div>
+{% endfor %}
+{% endif %}
+</div>
+
+
+  
+    
+      
+

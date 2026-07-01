@@ -1,0 +1,237 @@
+<style>
+  #freebiesAdderHolder {
+          display: none;
+          position: fixed;
+          top: 0px;
+          left: 0px;
+          width: 100vw;
+          height: 100vh;
+          background-color: rgba(0,0,0,0.5);
+          z-index: 775;
+          backdrop-filter: blur(2px);
+        }
+        #freebiesAdder {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%,-50%);
+          background-color: white;
+          padding: 20px;
+          padding-top: 0px;
+          border: black 1px solid;
+        }
+        @media only screen and (max-width: 400px) {
+          #freebiesAdder {
+            width: 100vw;
+          }
+        }
+        @media only screen and (min-width: 401px) and (max-width: 500px) {
+          #freebiesAdder {
+            width: 90vw;
+          }
+        }
+        #freebiesAdder button {
+          margin-top: 15px;
+        }
+</style>
+<script>
+  var freebies = {"qsalts":{"Banana Shake":{"5mg":"41026999943261","10mg":"41027000008797","20mg":"41027000041565"},"Blue Fusion":{"5mg":"41139435274333","10mg":"41139435307101","20mg":"41139435339869"},"Blue Lemonade":{"5mg":"41027000369245","10mg":"41027000402013","20mg":"41027000434781"},"Blueberry Gum":{"5mg":"41027000205405","10mg":"41027000238173","20mg":"41027000270941"},"Candy Apple":{"5mg":"41027000565853","10mg":"41027000598621","20mg":"41027000631389"},"Cherry Cola":{"5mg":"41027001385053","10mg":"41027001417821","20mg":"41027001450589"},"Energy Ice":{"5mg":"41139435438173","10mg":"41139435470941","20mg":"41139435503709"},"Grape Ice":{"5mg":"41027001581661","10mg":"41027001614429","20mg":"41027001647197"},"Lemon and Lime":{"5mg":"41139436552285","10mg":"41139436585053","20mg":"41139436617821"},"Peppermint Candy":{"5mg":"41139436290141","10mg":"41139436322909","20mg":"41139436355677"},"Pineapple Gummy":{"5mg":"41139437273181","10mg":"41139437305949","20mg":"41139437338717"},"Pink Lemonade":{"5mg":"41027001778269","10mg":"41027001811037","20mg":"41027001843805"},"Rainbow Candy":{"5mg":"41027002499165","10mg":"41027002531933","20mg":"41027002564701"},"Strawberry Mango":{"5mg":"41139437731933","10mg":"41139437764701","20mg":"41139437797469"},"Tropic Fusion":{"5mg":"41139437895773","10mg":"41139437928541","20mg":"41139437961309"},"Tropical Juice":{"5mg":"41027001974877","10mg":"41027002007645","20mg":"41027002040413"},"Watermelon":{"5mg":"41027002171485","10mg":"41027002204253","20mg":"41027002237021"},"White Peach Razz":{"5mg":"41139436027997","10mg":"41139436060765","20mg":"41139436093533"},"Apple Peach Chew":{"5mg":"42025089204317","10mg":"42025089237085","20mg":"42025089269853"},"Cherry Drops":{"5mg":"42025109913693","10mg":"42025109946461","20mg":"42025109979229"},"Parma Violets":{"5mg":"42025154248797","10mg":"42025154281565","20mg":"42025154314333"},"Ice Menthol":{"5mg":"54910297506171","10mg":"54910297538939","20mg":"54910297571707"},"Mineral Water":{"5mg":"54910299013499","10mg":"54910299046267","20mg":"54910299079035"},"Purple Rush":{"5mg":"54910304747899","10mg":"54910304780667","20mg":"54910304813435"},"Qberg":{"5mg":"54910305436027","10mg":"54910305468795","20mg":"54910305501563"}},"pure":{"Apple":{"0mg":"7558844186666","10mg":"7558844252202","15mg":"7558844284970","20mg":"7558844317738"},"Banana":{"0mg":"7558843203626","10mg":"7558843269162","15mg":"7558843301930","20mg":"7558843334698","5mg":"7558843236394"},"Berry":{"0mg":"7558842679338","10mg":"7558842744874","15mg":"7558842777642","20mg":"7558842810410","5mg":"7558842712106"},"Black Cherry":{"0mg":"7558839205930","10mg":"7558839271466","15mg":"7558839304234","20mg":"7558839337002","5mg":"7558839238698"},"Blackcurrant":{"0mg":"7558845366314","10mg":"7558845431850","15mg":"7558845464618","20mg":"7558845497386","5mg":"7558845399082"},"Blackcurrant Ice":{"0mg":"8082228445226","10mg":"8082228510762","15mg":"8082228543530","20mg":"8082228576298","5mg":"8082228477994"},"Blueberry":{"0mg":"7558844973098","10mg":"7558845038634","15mg":"7558845071402","20mg":"7558845104170","5mg":"7558845005866"},"Bubblegum":{"0mg":"7558832947242","10mg":"7558833012778","15mg":"7558833045546","20mg":"7558833078314","5mg":"7558832980010"},"Butler":{"0mg":"7558830096426","10mg":"7558830161962","15mg":"7558830194730","20mg":"7558830227498","5mg":"7558830129194"},"Cappuccino":{"0mg":"7558844579882","10mg":"7558844645418","15mg":"7558844678186","20mg":"7558844710954","5mg":"7558844612650"},"Cherry":{"0mg":"7558833340458","10mg":"7558833438762","15mg":"7558833471530","20mg":"7558833504298","5mg":"7558833373226"},"Cherry Ice":{"0mg":"8082183127082","10mg":"8082183290922","15mg":"8082183389226","20mg":"8082183421994","5mg":"8082183192618"},"Cigar":{"0mg":"7558842187818","10mg":"7558842253354","15mg":"7558842286122","20mg":"7558842318890","5mg":"7558842220586"},"Cola":{"0mg":"7558839664682","10mg":"7558839730218","15mg":"7558839762986","20mg":"7558839795754","5mg":"7558839697450"},"Clearance":{"Grapefruit 10mg":"31844505813085","Grapefruit 15mg":"31844505845853","Ice Menthol 10mg":"31844505878621"},"Exotic Fruit":{"10mg":"14623767101482","15mg":"14623767134250","5mg":"14623767068714"},"Grape":{"0mg":"7558833733674","10mg":"7558833799210","15mg":"7558833831978","20mg":"7558833864746","5mg":"7558833766442"},"Grape Ice":{"0mg":"8082204065834","10mg":"8082204196906","15mg":"8082204262442","20mg":"8082204327978","5mg":"8082204131370"},"Hedges":{"0mg":"7558830587946","10mg":"7558830653482","15mg":"7558830686250","20mg":"7558830719018","5mg":"7558830620714"},"Ice Menthol":{"0mg":"7558825771050","10mg":"7558825836586","15mg":"7558825869354","20mg":"7558825902122","5mg":"7558825803818"},"Mab":{"0mg":"7558837436458","10mg":"7558837501994","15mg":"7558837534762","20mg":"7558837567530","5mg":"7558837469226"},"Mango":{"0mg":"12654391328810","10mg":"12654391263274","15mg":"12654391296042","20mg":"12654391394346","5mg":"12654391361578"},"Mango Smoothie":{"0mg":"7558831964202","10mg":"7558832029738","15mg":"7558832062506","20mg":"7558832095274","5mg":"7558831996970"},"Menthol":{"0mg":"7558826819626","10mg":"7558826950698","15mg":"7558826983466","20mg":"7558827049002","5mg":"7558826885162"},"Nerd Burst":{"0mg":"7558836650026","10mg":"7558836715562","15mg":"7558836748330","20mg":"7558836781098","5mg":"7558836682794"},"High VG":{"ICE Shot":"29234028511274","Nicotine Shot":"14375828979754"},"Passion Fruit":{"0mg":"14623765200938","10mg":"14623765266474","15mg":"14623765299242","20mg":"14623765332010","5mg":"14623765233706"},"Raspberry":{"0mg":"7558838681642","10mg":"7558838812714","15mg":"7558838878250","20mg":"7558838943786","5mg":"7558838747178"},"Rose":{"0mg":"7558846578730","10mg":"7558846644266","15mg":"7558846677034","20mg":"7558846709802","5mg":"7558846611498"},"Strawberry":{"0mg":"7558831636522","10mg":"7558831702058","15mg":"7558831734826","20mg":"7558831767594","5mg":"7558831669290"},"Strawberry Kiwi":{"0mg":"7558835470378","10mg":"7558835535914","15mg":"7558835568682","20mg":"7558835601450","5mg":"7558835503146"},"Strawberry Melon":{"0mg":"14623763398698","10mg":"14623763464234","15mg":"14623763497002","20mg":"14623763529770","5mg":"14623763431466"},"Tutti Frutti":{"0mg":"7558849232938","10mg":"7558849298474","15mg":"7558849331242","20mg":"7558849364010","5mg":"7558849265706"},"UK Sterling":{"0mg":"7558829539370","10mg":"7558829604906","15mg":"7558829637674","20mg":"7558829670442","5mg":"7558829572138"},"Vanilla Ice Cream":{"0mg":"7558851723306","10mg":"7558851788842","20mg":"7558851854378","5mg":"7558851756074"},"Virginia":{"0mg":"7558828720170","10mg":"7558828818474","15mg":"7558828851242","20mg":"7558828884010","5mg":"7558828752938"},"Watermelon":{"0mg":"7558834978858","10mg":"7558835044394","15mg":"7558835077162","20mg":"7558835109930","5mg":"7558835011626"}}}        
+        
+        function showFreebies(element) {
+          var form = element.form; //document.getElementById('product_form_' + productId);
+          var productId = form.id.value.split('_').pop();
+          if (productId == "41139435110493" || productId == "41139435143261" || productId == "40862737236061"){$("#freebiesRange option[value=pure]").hide();} else {$("#freebiesRange option[value=pure]").show();}
+          console.log(form.id.value);
+          if (form.id.value != "" ){
+              $.ajax({
+                url: "//vapehq.sohamcomputerservices.co.uk/RetailVariantIDs.php",
+                type: 'get',
+                success: function(response) {
+                    console.log(response);
+                    freebies = response;
+                  {% if product.id == 7036790571101 %}
+                    loadFlavours("qsalts");
+                  {% endif %}
+                }, 
+                error: function(XMLHttpRequest){
+                    console.log('didnt work');
+                    console.log(XMLHttpRequest);
+                }
+            });
+            $('#freebiesAdderHolder').css('display', 'block');
+          }
+        }
+        
+        function loadFlavours(range) {
+          var select = document.getElementById('freebiesFlavour');
+          select.innerHTML = "";
+          var option = document.createElement('option');
+          option.innerHTML = "{{ section.settings.flavorDropdown }}";
+          select.appendChild(option);
+          Object.keys(freebies[range]).forEach(key => {
+            var option = document.createElement('option');
+            option.setAttribute('value', key);
+            option.innerHTML = key;
+            select.appendChild(option);
+          });
+        }
+        
+        function loadStrength(range, flavour) {
+          var select = document.getElementById('freebiesStength');
+          select.innerHTML = "";
+          var option = document.createElement('option');
+          option.innerHTML = "{{ section.settings.strengthDropdown }}";
+          select.appendChild(option);
+          Object.keys(freebies[range][flavour]).forEach(key => {
+            var option = document.createElement('option');
+            option.setAttribute('value', freebies[range][flavour][key]);
+            option.innerHTML = key;
+            select.appendChild(option);
+          });
+        }
+        
+        async function onTheFlyAddToCart(variantId) {
+              const result = await fetch("/cart/add.json", {
+                  method: "POST",
+                  headers: {
+                      "Content-Type": "application/json",
+                      "Accept": "application/json"
+                  },
+                  body: JSON.stringify({
+                      id: variantId,
+                      quantity: 1
+                  })
+              })
+          console.log(result);
+          switch (result.status){
+            case 200:
+              if (typeof $("#freebiesRange option:selected").html() !== 'undefined') {
+                alert ('{{ section.settings.confMessagept1 }} ' + $("#freebiesRange option:selected").html() + " - " + $("#freebiesFlavour option:selected").html() + ' {{ section.settings.confMessagept2 }}');
+              } else {
+                alert ('{{ section.settings.confMessagept1 }} ' + "QSalts - " + $("#freebiesFlavour option:selected").html() + ' {{ section.settings.confMessagept2 }}');
+              }
+              $('#freebiesAdderHolder').css('display', 'none');
+              var temp = document.getElementsByClassName("site-header-cart--count");
+              var temp2 = temp[0].getAttribute('data-header-cart-count');
+              temp[0].setAttribute('data-header-cart-count', parseInt(temp2) + 1);
+              break;
+            case 400:
+              alert('Looks like Chris broke something!');
+              $('#freebiesAdderHolder').css('display', 'none');
+              break;
+            case 404:
+              alert("{{ section.settings.errorMessage }}");
+              break;
+          }
+        }
+</script> 
+    <div id="freebiesAdderHolder">
+      <div id="freebiesAdder">
+        <h2>{% if product.id == 7036790571101 %}{{ section.settings.headerTextQsalt }}{% else %}{{ section.settings.headerText }}{% endif %}</h2>
+        {% if product.id != 7036790571101 %}
+        <select style="margin-top:5px;" id="freebiesRange" class="form-field-input form-field-select form-field-filled" onchange="loadFlavours(this.value);">
+          <option value="">{{ section.settings.rangeDropdown }}</option>
+          <option value="qsalts">QSalts Nic Salts</option>
+          <option id="pureOption" value="pure">Pure E-Liquid</option>
+        </select><br>{% endif %}
+        <select style="margin-top:5px;" id="freebiesFlavour" class="form-field-input form-field-select form-field-filled" onchange="loadStrength({% if product.id != 7036790571101 %}document.getElementById('freebiesRange').value{% else %}'qsalts'{% endif %}, this.value);"></select><br>
+        <select style="margin-top:5px;" id="freebiesStength" class="form-field-input form-field-select form-field-filled" onchange=""></select><br>
+        <button onclick="if ($('#freebiesRange').val() != '' && $('#freebiesFlavour').val() != '' && $('#freebiesStength').val() != ''){onTheFlyAddToCart(document.getElementById('freebiesStength').value)};" class="product-form--atc-button"><i class="fa-sharp fa-solid fa-cart-shopping-fast"></i> {{ section.settings.addButton }}</button><button style="background-color: {{ section.settings.noButtonColour }}" onclick="response = confirm('{{ section.settings.noQuestion }}'); if (response) {$('#freebiesAdderHolder').css('display', 'none');}" class="product-form--atc-button"><i class="fa-solid fa-ban"></i> {{ section.settings.noButton }}</button>
+      </div>
+    </div>
+    
+{% schema %}
+  {
+    "name": "Starter-Kit-Freebies",
+    "settings": [
+        {
+          "type": "header",
+          "content": "Dropdown/Button Text"
+        },
+        {
+          "type": "text",
+          "id": "headerText",
+          "label": "Header Text",
+          "default": "Choose your free 10ml E-Liquid"
+        },
+        {
+          "type": "text",
+          "id": "headerTextQsalt",
+          "label": "Header Text (QSalt only)",
+          "default": "Choose your free 10ml E-Liquid"
+        },
+      	{
+          "type": "text",
+          "id": "addButton",
+          "label": "Add Button Text",
+          "default": "Add free e-liquid"
+        },
+        {
+          "type": "text",
+          "id": "noButton",
+          "label": "No Thanks Button Text",
+          "default": "I don't want a free e-liquid"
+        },
+        {
+          "type": "color",
+          "id": "noButtonColour",
+          "label": "No Button Colour",
+          "default": "#990000"
+        },
+        {
+          "type": "text",
+          "id": "noQuestion",
+          "label": "No Thanks Are you Sure",
+          "default": "Are you sure?"
+        },
+        {
+          "type": "text",
+          "id": "rangeDropdown",
+          "label": "Range Dropdown Text",
+          "default": "Please Choose..."
+        },
+        {
+          "type": "text",
+          "id": "flavorDropdown",
+          "label": "Flavor Dropdown Text",
+          "default": "Please Choose your flavour..."
+        },
+        {
+          "type": "text",
+          "id": "strengthDropdown",
+          "label": "Strength Dropdown Text",
+          "default": "Please Choose your Strength..."
+        },
+        {
+          "type": "header",
+          "content": "Message Text"
+        },
+        {
+          "type": "text",
+          "id": "confMessagept1",
+          "label": "Confirmation message Text (Start)",
+          "default": "Your free bottle of"
+        },
+        {
+          "type": "text",
+          "id": "confMessagept2",
+          "label": "Confirmation message Text (End)",
+          "default": "has been added to your basket"
+        },
+        {
+          "type": "text",
+          "id": "errorMessage",
+          "label": "Error Message",
+          "default": "Something wen't wrong adding you item to your basket, it's possible it's currently out of stock. Please try another."
+        }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  
+{% endstylesheet %}
+
+{% javascript %}
+  
+{% endjavascript %}

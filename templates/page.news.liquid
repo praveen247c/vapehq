@@ -1,0 +1,108 @@
+<style>
+  .outerContainer {
+    max-width: 1400px; 
+    margin-left: auto; 
+    margin-right: auto;
+  }
+  .outerContainer h1 {
+    margin-left: auto; 
+    margin-right: auto; 
+    width: fit-content;
+  }
+  .blogContainers {
+    width: 100%; 
+    text-align: center;
+  }
+  .blogContainer {
+    display: inline-block; 
+    text-align: center; 
+    background-color: #f2f2f2; 
+    height: 275px;
+    margin-bottom: 5px;
+    margin-left: 2.5px;
+    margin-right: 2.5px;
+  }
+  .imgContainer {
+    width: calc(33% - 1px); 
+    height: 100%; 
+    float: left;
+    padding-left: 1px;
+    background-color: #01d567;
+  }
+  .imgContainer img {
+    width: calc(100% - 7px);
+  }
+  .articalContainer {
+    width: calc(67% - 3px);
+    float: right; 
+    text-align: left; 
+    height: 100%; 
+    padding: 5px; 
+    position:relative;
+  }
+  .articalContainer h1 {
+    color:#000; 
+    margin-top:5px; 
+    margin-bottom:10px; 
+  }
+  .articalAuthor {
+    display: flex; 
+    align-items:center;
+    margin-bottom: 5px;
+  }
+  .buttonContainer {
+    text-align: right; 
+    position: absolute; 
+    width: calc(100% - 10px); 
+    bottom: 5px; 
+    right: 5px;
+  }
+  @media screen and (min-width: 1024px) {
+    .blogContainer {
+      width: calc(50% - 20px); 
+    }
+    .imgContainer img {
+      transform: translatey(7%);
+    }
+    .articalContainer h1 {
+      font-size:25px;
+    }
+  }
+  @media screen and (max-width: 1023px) {
+    .blogContainer {
+      width: calc(100% - 20px); 
+    }
+    .imgContainer img {
+      transform: translatey(80%);
+    }
+    .articalContainer h1 {
+      font-size:14px;
+    }
+  }
+</style>
+<div class="outerContainer">
+  <h1>Latest News</h1>
+  <div class="blogContainers">
+    {% for artical in (1..page.metafields.blog_posts.total) %}
+      {% assign temp ='position' | append: artical | append: '_img' %}
+      {% assign image = page.metafields.blog_posts[temp] %}
+      {% assign temp ='position' | append: artical | append: '_link' %}
+      {% assign json_link = page.metafields.blog_posts[temp].value | parse_json %}
+      {% assign link = json_link.url %}
+      {% assign handle = json_link.url | split: "/" | last | replace: "_", "-" %}
+      {% for article in blogs['news'].articles %}{% assign article_handle = article.handle | replace: "news/", "" %}{% if article_handle == handle %}{% assign blog_post = article %}{% break %}{% endif %}{% endfor %}     
+      <div class="blogContainer">
+        <div class="imgContainer">
+          <img src="{{ image | image_url }}">
+        </div>
+        <div class="articalContainer">
+          <h1 class="article--title">{{ blog_post.title }}</h1>
+          <div class="articalAuthor"><span class="article--meta-item" style="color:#000; margin-right: 5px;">{{ blog_post.published_at | date: format: 'month_day_year' }}</span>{{ blog_post.author }}</div>
+          <p>{{ blog_post.content | truncatewords: 30 }}</p>
+          <div class="buttonContainer"><button class="product-form--atc-button mdc-ripple-surface mdc-ripple-upgraded" onclick="window.location.href = '{{ link }}'">Read More</button></div>
+        </div>
+        <div style="clear: both;"></div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

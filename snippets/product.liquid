@@ -1,0 +1,516 @@
+{% comment %}
+  @param layout {String}
+    Layout type
+
+  @param is_product_modal {Bool}
+    Is the snippet being loaded in a QuickShop
+
+  @param hide_description {Bool}
+    If true, hide the product description
+
+  @param gallery_aspect_ratio {string}
+    This is the gallery aspect ratio, can be one of 'natural', 'short', 'square', 'long'
+
+  @param gallery_thumbnail_position {string}
+    This is the gallery thumbnail position, can be one of 'below', or 'left'
+
+  @param gallery_image_crop {boolean}
+    Whether to crop images
+
+  @param gallery_hover_zoom {String}
+    This is the hover zoom setting, which is either 'disabled', 'separate', or 'replace'
+
+  @param gallery_click_to_zoom {String}
+    This is the click to zoom setting, which is either 'disabled', 'mobile', 'desktop', or 'always'
+{% endcomment %}
+
+{% assign onboarding = onboarding | default: false %}
+{% assign layout = layout | default: nil %}
+{% assign hide_description = hide_description | default: false %}
+
+{% assign enable_social_sharing = settings.product_social_sharing %}
+{% liquid
+  assign selected_variant = product.selected_variant
+
+  if product.variants.size == 1 or select_first_available_variant
+    assign selected_variant = product.selected_or_first_available_variant
+  endif
+%}
+{% assign compare_at_price = selected_variant.compare_at_price %}
+{% assign price = selected_variant.price %}
+{% assign sku = selected_variant.sku %}
+{% assign product_available = product.available %}
+
+{% comment %}For a potential divider in the product.description we need to split the content{% endcomment %}
+{% assign readmore_split = product.description | split: '<!-- more -->' %}
+{% assign multiTab = product.description | split: '<!-- tab -->' %}
+{% if multiTab.size > 1 %}<!-- It's Here!!! -->{% endif %}
+{% if onboarding %}
+  {% assign compare_at_price = 2999 %}
+  {% assign price = 1999 %}
+{% endif %}
+
+{% assign on_sale = false %}
+{% if compare_at_price > price %}
+  {% assign on_sale = true %}
+{% endif %}
+
+{% assign consistent_saved = false %}
+{% capture consistent_savings %}
+  {%
+    render 'consistent-savings',
+    variants: product.variants,
+    on_sale: on_sale
+  %}
+{% endcapture %}
+{% if consistent_savings contains 'true' %}
+  {% assign consistent_saved = true %}
+{% endif %}
+
+
+{%- capture share_buttons -%}
+  {% assign social_image = false %}
+  {% if product.featured_image %}
+    {% assign social_image = product.featured_image | img_url: '1024x' %}
+  {% endif %}
+  {% assign social_url = shop.url | append: product.url %}
+  {%-
+    render 'share-buttons',
+    snippet_title: 'general.share_buttons.title',
+    social_image: social_image,
+    social_title: product.title,
+    social_url: social_url
+  -%}
+{%- endcapture  -%}
+<article class="product--outer">
+  {% comment %}
+    Product slideshow, never moves
+  {% endcomment %}
+  {%
+    render 'product-gallery',
+    product: product,
+    aspect_ratio: gallery_aspect_ratio,
+    thumbnail_position: gallery_thumbnail_position,
+    image_crop: gallery_image_crop,
+    click_to_zoom: gallery_click_to_zoom,
+    hover_zoom: gallery_hover_zoom
+  %}
+  <div class="product-main">
+    <div class="product-details" data-product-details>
+      {% comment %} Title is rendered below the brand/vendor (see further down) {% endcomment %}
+{% if product %}
+  {% assign variant_sku_values = product.variants | map: 'sku' %}
+  {% assign sku_values = variant_sku_values | uniq | join: ';' %}
+  {% assign ls_selected_or_first_variant = product.selected_or_first_available_variant %}
+
+  {% if product.available %}
+    {% assign ls_availability = 1 %}
+  {% else %}
+    {% assign ls_availability = 0 %}
+  {% endif %}
+
+  <div id="lipscore-rating"
+    ls-product-name="{{ product.title }}"
+    ls-brand="{{ product.vendor }}"
+    ls-sku="{{ sku_values }}"
+    ls-product-id="{{ product.id }}"
+    ls-product-url="{{ shop.url }}{{ product.url }}"
+    ls-description="{{ product.description | escape }}"
+    ls-image-url="{{ product | img_url: '1024x1024' | remove: '_1024x1024' }}"
+    ls-price="{{ ls_selected_or_first_variant.price | money_without_currency }}"
+    ls-price-currency="{{ shop.currency }}"
+    ls-availability="{{ ls_availability }}"
+    ls-category="{{ product.type }}">
+  </div>
+{% endif %}
+               <a name="product-form"></a>
+
+      {% render 'product-brand-logos' %}
+
+      {% if product.tags contains "Terea" and product.variants.first.inventory_quantity <= 0 %}
+<!--<div style="padding:5px; margin-top:10px; font-size:11px; background-color:#FF0000; color:#FFF; display:inline-block; font-weight:bold; border-radius:5px;">WE'RE EXPECTING A NEW DELIVERY OF TEREA ON THURSDAY 7TH SEPTEMBER</div> -->
+        {% endif %}
+        
+      {% if settings.product_show_vendor and product.vendor != blank or onboarding %}
+        <div class="product-vendor">
+          {% unless onboarding %}
+            {%- capture vendor_link -%}
+              {{ product.vendor | link_to_vendor }}
+            {%- endcapture -%}
+            {{ 'product.general.by_vendor_html' | t: vendor_link: vendor_link }}
+          {% else %}
+            {{ 'onboarding.product.by_vendor' | t }}
+          {% endunless %}
+        </div>
+      {% endif %}
+
+      {% comment %} Title — directly above the rating {% endcomment %}
+      {% if is_product_modal %}
+        <h2 class="product-title">
+          <a href="{{ product.url | within: collection }}">{{ product.title }}</a>
+        </h2>
+      {% else %}
+        {% if template == 'index' %}
+          <h2 class="product-title">
+        {% else %}
+          <h1 class="product-title">
+        {% endif %}
+          {% unless onboarding %}
+            {{ product.title }}
+          {% else %}
+            {{ 'onboarding.product.title' | t }}
+          {% endunless %}
+        {% if template == 'index' %}
+          </h2>
+        {% else %}
+          </h1>
+        {% endif %}
+      {% endif %}
+
+      {% if settings.product_ratings_reviews %}
+        <div class="product-ratings">
+          <span class="shopify-product-reviews-badge" data-id="{{ product.id }}">
+            <span class="spr-badge">
+              <span class="spr-starrating spr-badge-starrating">
+                <i class="spr-icon spr-icon-star-empty"></i>
+                <i class="spr-icon spr-icon-star-empty"></i>
+                <i class="spr-icon spr-icon-star-empty"></i>
+                <i class="spr-icon spr-icon-star-empty"></i>
+                <i class="spr-icon spr-icon-star-empty"></i>
+              </span>
+            </span>
+          </span>
+          {% unless is_product_modal %}
+            <a
+              class="product-ratings-link"
+              href="#lipscore-review-list"
+              style="margin-left:8px; font-size:13px; color:#0b76e0; white-space:nowrap;"
+              onclick="var t=document.getElementById('lipscore-review-list'); if(t){event.preventDefault(); t.scrollIntoView({behavior:'smooth'});}"
+            >Read reviews</a>
+          {% endunless %}
+        </div>
+      {% endif %}
+
+      {% comment %} Explicit stock status, under the rating {% endcomment %}
+      {% unless onboarding or is_product_modal %}
+        {% if product_available %}
+          <div class="instockproduct" style="margin-top:8px;"><i class="far fa-check-circle"></i> IN STOCK</div>
+        {% else %}
+          <div class="instockproduct" style="margin-top:8px;"><i class="far fa-times-circle"></i> OUT OF STOCK</div>
+        {% endif %}
+      {% endunless %}
+
+      <div class="product-pricing" aria-live="polite" data-product-pricing>
+        {%
+          render 'product-badge',
+          class_root: 'product',
+          product: product,
+          product_available: product_available,
+          on_sale: on_sale,
+          price: price,
+          compare_at_price: compare_at_price,
+          show_saved: true,
+          include_range: false,
+          selected_variant: selected_variant,
+        %}
+
+        {%
+          render 'product-price',
+          product: product,
+          class_root: 'product',
+          price: price,
+          price_varies: false,
+          compare_at_price: compare_at_price,
+          compare_at_price_varies: false,
+          on_sale: on_sale,
+          emphasize_price: false,
+          show_original: true,
+          show_range: false,
+          include_unit_price: true,
+          include_tax_line: true,
+          include_hidden_price: true
+        %}
+{% render 'price-multibuy' %}
+
+{% assign has_spares = false %}
+{% assign has_coils = false %}
+
+{% for tag in product.tags %}
+  {% if tag == 'Spares' %}
+    {% assign has_spares = true %}
+  {% elsif tag == 'Coils' %}
+    {% assign has_coils = true %}
+  {% endif %}
+{% endfor %}
+
+{% if has_spares and has_coils %}
+    <br><span style="color:#fff; background-color:#0b76e0; font-size:12px; padding:5px; display:inline-block; border-radius:5px;"><b>Please note: Coils are sold in packs</b></span>
+{% endif %}
+        
+        <form data-payment-terms-target style="display: none;"></form>
+      </div>
+      
+      {% if product.tags contains "weeklydeal" %}
+      <a href="/pages/offers" style="text-decoration:none;"><div style="color:#0b76e0; font-weight:bold; margin-top:5px;"><i class="fa-sharp fa-solid fa-timer fa-bounce" style="float:left; margin-right:5px;"></i> TIMED WEEKLY DEAL</div></a> 
+      <span style="font-size:11px; color:#0b76e0; font-weight:bold;">ONLINE ONLY</span>
+      {% endif %}
+
+     
+
+     {% comment %} {% if product.tags contains "mysterybox" %}
+      <div style="color:#0b76e0; font-weight:bold; margin-top:5px;"><i class="fa-solid fa-arrow-pointer fa-shake" style="float:left; margin-right:5px;"></i> ONLINE ONLY DEAL</div> 
+      <span style="font-size:11px; color:#0b76e0; font-weight:bold;">ENDS 09/05/23</span>
+        {% endif %} {% endcomment %}
+      
+      {% if settings.product_show_sku == true %}
+        {% unless onboarding %}
+          <div
+            class="
+              product-sku
+              {% if sku == empty %}product-sku--empty{% endif %}
+            "
+          >
+            {{ 'product.general.sku_html' | t: sku: sku | strip_newlines }}
+          </div>
+        {% endunless %}
+      {% endif %}
+    </div>
+
+    {% comment %}
+      Product form original location, will remain unless is 3 column layout
+    {% endcomment %}
+    <div class="product-form--regular" data-product-form-regular>
+      <div data-product-form-area style="position: -webkit-sticky; position: sticky; top: 150px;">
+        {% if is_product_modal %}
+          <div data-product-quickshop-message class="product-message--container"></div>
+        {% endif %}
+
+<div align="center">
+
+  {% comment %}
+{% if product.variants.first.inventory_quantity > 0 %}
+<div style="max-width:300px; margin-top:15px; text-align:center;">
+<div class="instockproduct"><i class="far fa-check-circle"></i> IN STOCK
+</div></div>
+  {% else %}
+  <div style="max-width:300px; margin-top:15px; text-align:center;">
+<div class="instockproduct"><i class="far fa-times-circle"></i> OUT OF STOCK
+</div></div>
+  {% endif %}
+  {% endcomment %}
+
+{% render 'product-page-offers' %}
+
+
+  
+</div>
+
+
+        {% unless onboarding %}
+          {%
+            render 'product-form',
+            product: product,
+            selected_variant: selected_variant,
+            is_product_modal: is_product_modal,
+          %}
+        {% endunless %}
+{% render 'after-add-cart' %}
+
+        {% comment %} Reassurance row, directly under the Add to cart {% endcomment %}
+        {% render 'product-reassurance' %}
+
+        <div align="center">
+          {% comment %}{% if product.tags contains "Shortfill" %}
+          <div style="margin:20px 0px 20px 0px; font-weight:bold; font-size:12px;"><a href="/collections/nicotine-shots" style="background-color:#0b76e0; border-radius:50px; color:#fff; padding:7px 9px 7px 9px; text-decoration:none;"><i class="fa-solid fa-droplet fa-bounce"></i> Don't Forget Nicotine Shots</a></div>
+          {% endif %}{% endcomment %}
+
+        
+          <!--<div class="orderbybanner" style="margin-top:15px;">
+        <i class="fa-sharp fa-solid fa-award" style="float:left;"></i> We're rated <span class="orderbybanneralt">{{ shop.metafields.judgeme.all_reviews_rating | round: 1 }}/5</span> from {{ shop.metafields.judgeme.all_reviews_count }} reviews 
+        </div>-->
+          {% if product.metafields.reviews.rating_count >= 0 %}
+        <!--<a style="text-decoration:none; color:#000;" href="#reviews">
+          <div class="orderbybanner" style="margin-top:10px;">
+        <i class="fa fa-star" style="float:left;"></i> This product has <span class="orderbybanneralt">{{ product.metafields.reviews.rating_count }}</span> reviews 
+        </div></a>-->
+            {% endif %}
+        </div>
+
+<div align="center">
+<div style="max-width:300px; font-size:13px; display:inline-block; margin-top:10px;"><span style="float:left; display:flex; margin-bottom: 0px; margin-left: 0rem; padding: 0;"><i style="font-size:25px; color:#0b76e0;" class="fa fa-info-circle"></i></span>
+<span style="margin-top:0px; margin-left:0.5rem; margin-right:10px; float:right;"><b>Need advice?</b><br><a style="color:#000; text-decoration:none;" href="/apps/help-center">Ask a question <i style="font-size:10px;" class="fa fa-chevron-right"></i></a></span></div>
+
+<div style="max-width:300px; font-size:13px; display:inline-block; margin-top:10px;"><span style="float:left; display:flex; margin-bottom: 0px; margin-left: 0rem; padding: 0;"><i style="font-size:25px; color:#0b76e0;" class="fa fa-question-circle"></i></span>
+<span style="margin-top:0px; margin-left:0.5rem; margin-right:10px; float:right;"><b>New to vaping?</b><br><a style="color:#000; text-decoration:none;" href="/blogs/news">Read our guides <i style="font-size:10px;" class="fa fa-chevron-right"></i></a></span></div>
+</div>
+
+        
+        {% if hide_description %}
+          <a
+            href="{{ product.url | within: collection }}"
+            class="product-link"
+            data-product-details-link
+          >
+            {{ 'product.buttons.view_details' | t }}
+          </a>
+        {% endif %}
+
+        {% if enable_social_sharing and is_product_modal == false %}
+          {{ share_buttons | strip_newlines }}
+        {% endif %}
+      </div>
+    </div>
+
+    {% comment %}
+      Product description field, never moves
+    {% endcomment %}
+{% comment %}
+{% if product.tags contains "QSalts410" %}
+  <p><img src="https://cdn.shopify.com/s/files/1/2600/2254/files/qsalts-4for10.jpg?v=1683803621" style="width:100%;"></p>
+{% endif %}
+    {% endcomment %}
+  {% comment %} Quickshop modal only — the full-width version is rendered below the article on the product page {% endcomment %}
+  {% if is_product_modal %}
+  {% if multiTab.size > 1 %}
+    <script>
+      var Plus = '<i class="fa-solid fa-plus"></i>',
+          Minus = '<i class="fa-solid fa-minus"></i>';
+    </script>
+    <div class="product-description rte" data-product-description>
+      {% for myTab in multiTab %}
+      {% assign tabStuff = myTab | split: '-->' %}
+      {% assign tabHeader = tabStuff[0] | remove: '<!--' %}
+      {% assign tabContent = tabStuff[1] %}
+        <div style="border: black solid 1px; border-radius: 5px; padding: 5px;">
+          <div style="width: 100%;">
+            {% assign temp = tabHeader | remove: ' ' %}
+            <strong>{{ tabHeader }}</strong><button onclick="if($('#{{ tabHeader | handleize }}-content').css('display') == 'block'){$('#{{ tabHeader | handleize }}-content').css('display', 'none'); $(this).html(Plus);}else{$('#{{ tabHeader | handleize }}-content').css('display', 'block'); $(this).html(Minus);}" style="float: right; width: 21.25px; height: 21.25px; border-radius: 5px;">{% if temp == "Description" %}<i class="fa-solid fa-minus"></i>{% else %}<i class="fa-solid fa-plus"></i>{% endif %}</button>
+          </div>
+          <div id="{{ tabHeader | handleize }}-content" style="display: {% if temp == "Description" %}block{% else %}none{% endif %};"> {{ tabContent }}</div>
+        </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    {% if readmore_split[0] != blank and hide_description != true %}
+      <div class="product-description rte" data-product-description>
+        {{ readmore_split[0] }}
+      {% render 'related-description' %}
+      </div>
+    {% endif %}
+{% endif %}
+  {% endif %}{% comment %} end quickshop-modal description {% endcomment %}
+    {% if enable_social_sharing and is_product_modal %}
+      {{ share_buttons | strip_newlines }}
+    {% endif %}
+  </div>
+
+  {% comment %}
+    If is a 3 column layout, the form will move here at $bp-large (layout.isBreakpoint('L'))
+  {% endcomment %}
+  {% if layout == 'layout--three-col' %}
+    <div class="product-form--alt" data-product-form-alt></div>
+  {% endif %}
+</article>
+
+{% comment %} Description + Specifications — full width, below the buy area (product page) {% endcomment %}
+{% unless is_product_modal %}
+  {% if multiTab.size > 1 %}
+    <script>
+      var Plus = '<i class="fa-solid fa-plus"></i>',
+          Minus = '<i class="fa-solid fa-minus"></i>';
+    </script>
+    <div class="product-description rte" data-product-description>
+      {% for myTab in multiTab %}
+      {% assign tabStuff = myTab | split: '-->' %}
+      {% assign tabHeader = tabStuff[0] | remove: '<!--' %}
+      {% assign tabContent = tabStuff[1] %}
+        <div style="border: black solid 1px; border-radius: 5px; padding: 5px;">
+          <div style="width: 100%;">
+            {% assign temp = tabHeader | remove: ' ' %}
+            <strong>{{ tabHeader }}</strong><button onclick="if($('#{{ tabHeader | handleize }}-content').css('display') == 'block'){$('#{{ tabHeader | handleize }}-content').css('display', 'none'); $(this).html(Plus);}else{$('#{{ tabHeader | handleize }}-content').css('display', 'block'); $(this).html(Minus);}" style="float: right; width: 21.25px; height: 21.25px; border-radius: 5px;">{% if temp == "Description" %}<i class="fa-solid fa-minus"></i>{% else %}<i class="fa-solid fa-plus"></i>{% endif %}</button>
+          </div>
+          <div id="{{ tabHeader | handleize }}-content" style="display: {% if temp == "Description" %}block{% else %}none{% endif %};"> {{ tabContent }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    {% if readmore_split[0] != blank and hide_description != true %}
+      <div class="product-description rte" data-product-description>
+        <h2>Description</h2>
+        {{ readmore_split[0] }}
+      {% render 'related-description' %}
+      </div>
+    {% endif %}
+  {% endif %}
+
+  {% render 'product-spec-table' %}
+{% endunless %}
+
+{% if readmore_split[1] != blank and hide_description != true and is_product_modal != true %}
+  <div class="product-readmore rte" data-product-readmore>
+    {{ readmore_split[1] }}
+  </div>
+{% endif %}
+
+
+<style>
+.product-sticky-atc {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #fff;
+    border-top: 1px solid #e8ebef;
+    padding: 10px 16px;
+    z-index: 10000;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 -4px 16px rgba(0,0,0,.06);
+    transform: translateY(100%);
+    transition: transform .25s ease;
+    display: none;
+}
+@media screen and (max-width: 719px) {
+    .product-sticky-atc { display: flex; }
+    .product-sticky-atc.is-visible { transform: translateY(0); }
+}
+.product-sticky-atc__info { flex: 1 1 auto; min-width: 0; }
+.product-sticky-atc__title { font-size: 12px; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.product-sticky-atc__price { font-weight: bold; font-size: 15px; }
+.product-sticky-atc__btn {
+    flex: 0 0 auto;
+    border: 0;
+    border-radius: 8px;
+    background: #0b76e0;
+    color: #fff;
+    font-weight: 700;
+    padding: 0 18px;
+    height: 46px;
+    cursor: pointer;
+    font-size: 15px;
+}
+</style>
+
+{% unless is_product_modal %}
+{% if template != 'index' %}
+<div id="product-sticky-atc" class="product-sticky-atc">
+  <div class="product-sticky-atc__info">
+    <div class="product-sticky-atc__title">{{ product.title }}</div>
+    <div class="product-sticky-atc__price">{{ price | money }}</div>
+  </div>
+  <button type="button" class="product-sticky-atc__btn" onclick="var t=document.getElementsByName('product-form')[0]; if(t){t.scrollIntoView({behavior:'smooth'});}">
+    {{ 'product.buttons.add_to_cart' | t }}
+  </button>
+</div>
+<script>
+(function(){
+  var bar = document.getElementById('product-sticky-atc');
+  if(!bar) return;
+  window.addEventListener('scroll', function(){
+    if(window.scrollY >= 700){ bar.classList.add('is-visible'); }
+    else { bar.classList.remove('is-visible'); }
+  }, {passive:true});
+})();
+</script>
+{% endif %}
+{% endunless %}

@@ -1,0 +1,23 @@
+{% assign continue_shopping_url = "/collections/all" %}
+
+{% if settings.continue_shopping_url != blank %}
+  {% assign continue_shopping_url = settings.continue_shopping_url %}
+{% endif %}
+
+<section class="fourohfour--container">
+  <header class="fourohfour-title">
+    <img src="https://cdn.shopify.com/s/files/1/2600/2254/files/404-ghost.png?v=1677763078">
+    <h1>Oops! {{ '404.general.title' | t }}</h1>
+  </header>
+
+  <div class="fourohfour--inner">
+    <p>{{ '404.general.text' | t }}</p>
+
+    {% if settings.continue_url_404 != blank %}
+      <a class="button-primary" href="{{ continue_shopping_url }}">
+        {{ '404.general.continue_shopping' | t }}
+      </a>
+    {% endif %}
+    {% render 'judgeme_widgets', widget_type: 'judgeme_featured_carousel', concierge_install: false %}
+  </div>
+</section>

@@ -1,0 +1,94 @@
+{% comment %}
+  Specifications table, derived automatically from the product's tags.
+  Rows with no matching tag are omitted. If nothing matches, nothing renders.
+  Output is wrapped in .rte so it inherits the theme's native table styling
+  (no custom colours added).
+{% endcomment %}
+
+{%- liquid
+  assign flavour_set = ',fruit,fruits,fruity,menthol,ice,iced,ice-menthol,menthol-ice,dessert,desserts,drinks,drink,beverage,beverages,sweets,sweet,candy,tobacco,other,bakery,custard,mint,cereal,coffee,nuts,sour,cola,energy,'
+  assign vgpg_set = ',70-30,30-70,50-50,60-40,40-60,80-20,20-80,55-45,45-55,65-35,35-65,'
+
+  assign spec_bottle = ''
+  assign spec_vgpg = ''
+  assign spec_nicotine = ''
+  assign spec_bestfor = ''
+  assign spec_flavour = ''
+  assign spec_compliance = ''
+
+  for tag in product.tags
+    assign h = tag | handle
+    assign needle = ',' | append: h | append: ','
+    assign last2 = h | slice: -2, 2
+
+    # Bottle size, e.g. 10ML / 50ML / 100ML
+    if last2 == 'ml'
+      assign prefix = h | remove: 'ml'
+      assign as_num = prefix | times: 1
+      if as_num > 0
+        assign spec_bottle = spec_bottle | append: ', ' | append: tag
+      endif
+    endif
+
+    # VG / PG ratio (stored as "70/30", "50/50", ...)
+    assign ratio_h = h | replace: '/', '-'
+    assign ratio_needle = ',' | append: ratio_h | append: ','
+    if vgpg_set contains ratio_needle
+      assign spec_vgpg = spec_vgpg | append: ', ' | append: tag
+    endif
+
+    # Nicotine type
+    if h == 'nicotine-salt' or h == 'nic-salt' or h == 'nic-salts' or h == 'nicotine-salts'
+      assign spec_nicotine = 'Nicotine salt'
+    elsif h contains 'freebase'
+      assign spec_nicotine = 'Freebase'
+    elsif h == 'nicotine-free' or h == 'no-nicotine'
+      assign spec_nicotine = 'Nicotine-free'
+    endif
+
+    # Best for (vaping style)
+    if h == 'mouth-to-lung' or h == 'mtl'
+      assign spec_bestfor = spec_bestfor | append: ', ' | append: 'Mouth-to-lung (MTL)'
+    elsif h == 'direct-to-lung' or h == 'dtl'
+      assign spec_bestfor = spec_bestfor | append: ', ' | append: 'Direct-to-lung (DTL)'
+    elsif h == 'sub-ohm'
+      assign spec_bestfor = spec_bestfor | append: ', ' | append: 'Sub-ohm'
+    endif
+
+    # Flavour profile
+    if flavour_set contains needle
+      assign spec_flavour = spec_flavour | append: ', ' | append: tag
+    endif
+
+    # Compliance
+    if h contains 'tpd'
+      assign spec_compliance = 'TPD compliant'
+    endif
+  endfor
+
+  assign spec_bottle = spec_bottle | remove_first: ', '
+  assign spec_vgpg = spec_vgpg | remove_first: ', '
+  assign spec_bestfor = spec_bestfor | remove_first: ', '
+  assign spec_flavour = spec_flavour | remove_first: ', '
+
+  assign has_specs = false
+  if spec_bottle != '' or spec_vgpg != '' or spec_nicotine != '' or spec_bestfor != '' or spec_flavour != '' or spec_compliance != ''
+    assign has_specs = true
+  endif
+-%}
+
+{%- if has_specs -%}
+  <div class="product-specs rte" data-product-specs>
+    <h2>Specifications</h2>
+    <table>
+      <tbody>
+        {%- if spec_bottle != '' -%}<tr><th scope="row">Bottle size</th><td>{{ spec_bottle }}</td></tr>{%- endif -%}
+        {%- if spec_vgpg != '' -%}<tr><th scope="row">VG / PG ratio</th><td>{{ spec_vgpg }}</td></tr>{%- endif -%}
+        {%- if spec_nicotine != '' -%}<tr><th scope="row">Nicotine type</th><td>{{ spec_nicotine }}</td></tr>{%- endif -%}
+        {%- if spec_bestfor != '' -%}<tr><th scope="row">Best for</th><td>{{ spec_bestfor }}</td></tr>{%- endif -%}
+        {%- if spec_flavour != '' -%}<tr><th scope="row">Flavour profile</th><td>{{ spec_flavour }}</td></tr>{%- endif -%}
+        {%- if spec_compliance != '' -%}<tr><th scope="row">Compliance</th><td>{{ spec_compliance }}</td></tr>{%- endif -%}
+      </tbody>
+    </table>
+  </div>
+{%- endif -%}

@@ -1,0 +1,156 @@
+<style>
+.shippinghours {
+  display:none;
+}
+   @media only screen and (max-width: 480px) {
+    .shippingtimer {
+      font-size: 13px;
+    }
+  }
+  @media only screen and (min-width: 481px) {
+    .shippingtimer {
+      font-size: 26px;
+    }
+  }
+</style>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>-->
+<div class="shippinghours openstatus">
+  <div id="countdown-timer" class="shippingtimer">
+    <span id="shipping-message">Want it tomorrow?</span> Order in the next
+    <div class="hrs" style="display:inline-block;">
+      <span id="countdownhrs">00</span>h
+    </div>
+    <div class="mins" style="display:inline-block;">
+      <span id="countdownmins">00</span>m
+    </div>
+    <div class="secs" style="display:inline-block;">
+      <span id="countdownsecs">00</span>s
+    </div>
+  </div>
+</div>
+<div class="closed openstatus"></div>
+{% if start <= today and today <= end %}
+  <script>$('.openstatus').show();</script>
+{% else %}
+<script>
+  var Now = new Date();
+  var CurrentDay = new Date().getDay();
+  switch (CurrentDay) { 
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+        var OpenHour = 0;
+        var OpenMin = 0;
+        var CloseHour = 16;
+        var CloseMin = 00;
+        break;
+    case 6:
+        var OpenHour = 0;
+        var OpenMin = 0;
+        var CloseHour = 14;
+        var CloseMin = 0;
+        break;
+    case 0:
+        var OpenHour = 0;
+        var OpenMin = 0;
+        var CloseHour = 13;
+        var CloseMin = 0;
+        break;
+  }
+
+  var OpeningTime = new Date(Now.getFullYear(), Now.getMonth(), Now.getDate(), OpenHour, OpenMin);
+  var ClosingTime = new Date(Now.getFullYear(), Now.getMonth(), Now.getDate(), CloseHour, CloseMin);
+  var Open = (Now.getTime() > OpeningTime.getTime() && Now.getTime() < ClosingTime.getTime());
+
+  if(Open) {
+    $('.openstatus').show();
+    $('.shippinghours').css('display', 'block');
+  } else {
+    $('.openstatus').hide();
+    $('.shippinghours').css('display', 'none');
+  }
+
+  console.log("Day: " + CurrentDay + ", Open Status: " + Open + ", Opening Time: " + OpeningTime + ", Closing Time: " + ClosingTime);
+</script>
+
+<script>
+if (document.getElementById('countdown-timer')) {
+    pad = function(n, len) { // leading 0's
+        var s = n.toString();
+        return (new Array((len - s.length + 1)).join('0')) + s;
+    };
+
+    const validDays = [0, 1, 2, 3, 4, 5, 6]; // Monday = 1, Tuesday = 2, etc.
+
+    setInterval(function() {
+      const now = new Date();
+      const currentDay = now.getDay();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+
+      // Define the default closing time based on the current day
+      switch (currentDay) {
+        case 6:
+          var targetHour = 14;
+          var targetMinute = 0;
+          break;
+        case 0:
+          var targetHour = 13;
+          var targetMinute = 0;
+          break;
+        default:
+          var targetHour = 16;
+          var targetMinute = 0;
+          break;
+      }
+
+      const targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), targetHour, targetMinute);
+      let distance = targetTime.getTime() - now.getTime();
+
+      // Adjust the target time if it has already passed
+      if (distance < 0) {
+        targetTime.setDate(targetTime.getDate() + 1);
+        distance = targetTime.getTime() - now.getTime();
+      }
+
+      // Calculate hours, minutes, and seconds remaining
+      const hours = Math.floor(distance / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      var str_hrs = pad(hours, 2);
+      var str_mins = pad(minutes, 2);
+      var str_secs = pad(seconds, 2);
+
+      document.getElementById('countdownhrs').innerHTML = str_hrs;
+      document.getElementById('countdownmins').innerHTML = str_mins;
+      document.getElementById('countdownsecs').innerHTML = str_secs;
+
+      // Update the shipping message based on day and time
+      var shippingMessageElement = document.getElementById('shipping-message');
+
+      // Monday - Thursday logic
+      if (currentDay >= 1 && currentDay <= 4) {
+        if (currentDay === 4 && currentHour >= 16) {
+          // Thursday after 16:00
+          shippingMessageElement.innerHTML = "Want it for Saturday?";
+        } else {
+          // Before Thursday 16:00
+          shippingMessageElement.innerHTML = "Want it tomorrow?";
+        }
+      } else if (currentDay === 5) {
+        // Friday logic
+        if (currentHour >= 16) {
+          shippingMessageElement.innerHTML = "Want it for Sunday?";
+        } else {
+          shippingMessageElement.innerHTML = "Want it tomorrow?";
+        }
+      } else {
+        // Hide the message on weekends (Saturday and Sunday)
+        shippingMessageElement.innerHTML = "";
+      }
+    }, 1000);
+}
+</script>{% endif %}

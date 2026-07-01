@@ -1,0 +1,134 @@
+<div 
+     data-placement_fullwidth="{%- if section.settings.placement_fullwidth -%}1{%- else -%}0{%- endif -%}"
+     id="custom-widget-{{section.id}}" class="custom-widget-wrapper{%- if section.settings.visible_on_mobile == false -%}{{" hidden-xs"}}{%- endif-%}" data-section-id="{{ section.id }}" data-section-type="custom-widget">
+  	{%- for block in section.blocks -%}
+      <div class="custom-widget" {{ block.shopify_attributes }}>
+        {%- if block.type == 'custom_html' -%}
+  <div align="center" style="margin-top:-10px;">
+          
+<div style="max-width:1400px; margin:auto;">
+
+    <div class="hmblockcontainer">
+      
+      <!-- First Block with Different Desktop and Mobile Images -->
+      <div class="hmbox">
+        <a href="/products/q2-pro-starter-kit-bundle">
+          <img class="boximg" 
+               src="{{ section.settings.desktop_image_1 | default: 'https://cdn.shopify.com/s/files/1/2600/2254/files/Mobile_Block_-_Q2_Pro_Bundle_bcc2f3d5-359d-4035-acf5-fda6b7c50e43.png?v=1769703413' }}"
+               srcset="{{ section.settings.mobile_image_1 | default: 'https://cdn.shopify.com/s/files/1/2600/2254/files/Mobile_Block_-_Q2_Pro_Bundle_bcc2f3d5-359d-4035-acf5-fda6b7c50e43.png?v=1769703413' }} 600w"
+               alt="Q2 Pro Kit">
+        </a>
+      </div>
+
+      <!-- Second Block with Different Desktop and Mobile Images -->
+      <div class="hmbox">
+        <a href="/products/vaporesso-vibe-kit">
+          <img class="boximg" 
+               src="{{ section.settings.desktop_image_2 | default: 'https://cdn.shopify.com/s/files/1/2600/2254/files/Mobile_Block_-_Vaporesso_Vibe.png?v=1776846131' }}"
+               srcset="{{ section.settings.mobile_image_2 | default: 'https://cdn.shopify.com/s/files/1/2600/2254/files/Mobile_Block_-_Vaporesso_Vibe.png?v=1776846131' }} 600w"
+               alt="Vaporesso Vibe Kit">
+        </a>
+      </div>
+
+      <!-- Third Block with Different Desktop and Mobile Images -->
+      <div class="hmbox">
+        <a href="/products/hula-pod-system-kit">
+          <img class="boximg" 
+               src="{{ section.settings.desktop_image_3 | default: 'https://cdn.shopify.com/s/files/1/2600/2254/files/Mobile_Block_-_Hula.png?v=1769703412' }}"
+               srcset="{{ section.settings.mobile_image_3 | default: 'https://cdn.shopify.com/s/files/1/2600/2254/files/Mobile_Block_-_Hula.png?v=1769703412' }} 600w"
+               alt="10ML E-Liquids">
+        </a>
+      </div>
+
+    </div>
+
+</div>
+
+{%- else -%}
+  {{ pages[block.settings.page_content].content }}
+{%- endif -%}
+      </div>
+    {%- endfor -%}
+</div>
+
+{% schema %}
+{
+  "name": "Home Blocks",
+  "class": "index-section section-wrapper",
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "placement_fullwidth",
+      "label": "Force Full Width"
+    },
+    {
+      "type": "checkbox",
+      "id": "visible_on_mobile",
+      "label": "Display on Mobile"
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_image_1",
+      "label": "Desktop Image for First Block"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image_1",
+      "label": "Mobile Image for First Block"
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_image_2",
+      "label": "Desktop Image for Second Block"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image_2",
+      "label": "Mobile Image for Second Block"
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_image_3",
+      "label": "Desktop Image for Third Block"
+    },
+    {
+      "type": "image_picker",
+      "id": "mobile_image_3",
+      "label": "Mobile Image for Third Block"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "custom_html",
+      "name": "Custom HTML",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "html_content",
+          "label": "HTML Content",
+          "info": "[How to use?](https://youtu.be/s7s8hWXVxGE)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Home Blocks",
+      "category": "Content",
+      "settings": {
+        "placement_fullwidth": true,
+        "visible_on_mobile": true
+      },
+      "blocks": [
+        {
+          "type": "custom_html",
+          "settings": {
+            "html_content": "<div style='text-align: center;'><h1>This is sample HTML</h1></div>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

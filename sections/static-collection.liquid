@@ -1,0 +1,1479 @@
+{%- capture to_hash -%}
+  {{- 'now' | date: '%H' -}}
+{%- endcapture -%}
+{% render 'breadcrumbs' %}
+{% assign to_hash = to_hash | replace: ' ', '' | sha256 %}
+{% assign colect = "halloween-savings-2024,5-for-10-disposables" | split: "," %}
+{% if colect contains collection.handle %}<div style="
+    background-image: url('https://cdn.shopify.com/s/files/1/2600/2254/files/Halloween_Collection_Banner.png?v=1730128419');
+    background-repeat: no-repeat;
+    background-size: 100% auto;
+">{% endif %}
+  
+<script
+  type="application/json"
+  data-section-type="static-collection"
+  data-section-id="{{ section.id }}"
+  data-section-data
+>
+  {
+    "show_filter_product_count": false,
+    "product_count": {{ collection.products_count | json }},
+    "hash": {{ to_hash | json }},
+    "filter_groups": "expand_first_two",
+    "filter_style": "tags",
+    "no_matched_products_text": {{ 'general.accessibility.no_matched_products' | t: tag: '*tag*' | json }},
+    "context": {
+      "see_more": {{ 'general.general.see_more' | t | json }},
+      "see_less": {{ 'general.general.see_less' | t | json }},
+      "grid_list": {{ section.settings.default_view | json }},
+      "collectionUrl": {{ collection.url | default: '/collections/all' | json }}
+    }
+  }
+</script>
+
+
+
+{% assign show_sidebar = false %}
+{% assign show_filters = true %}
+{% assign show_filter_trigger = false %}
+
+{% style %}
+  #shopify-section-{{ section.id }} .subcollections-list__content {
+    grid-template-columns: repeat(7, minmax(auto, 1fr));
+  }
+  @media only screen and (max-width: 860px) {
+    #shopify-section-{{ section.id }} .subcollections-list__content {
+      grid-template-columns: repeat(5, minmax(auto, 1fr));
+    }
+  }
+  @media only screen and (max-width: 480px) {
+    #shopify-section-{{ section.id }} .subcollections-list__content {
+      grid-template-columns: repeat(3, minmax(auto, 1fr));
+    }
+  }
+{% endstyle %}
+
+{% comment %} VapeHQ: modern restyle for the left filter sidebar {% endcomment %}
+{%- assign filter_accent = settings.color_links | default: settings.color_button_background | default: '#1a1a1a' -%}
+{% style %}
+  #shopify-section-{{ section.id }} .productgrid--sidebar {
+    font-size: 0.95em;
+  }
+  @media only screen and (min-width: 769px) {
+    #shopify-section-{{ section.id }} .productgrid--sidebar {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 1.5rem;
+      align-self: flex-start;
+    }
+  }
+
+  /* Group cards */
+  #shopify-section-{{ section.id }} .productgrid--sidebar-group {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+    background: #fff;
+  }
+  #shopify-section-{{ section.id }} .productgrid--sidebar-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.85rem 1rem;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    text-align: left;
+  }
+  #shopify-section-{{ section.id }} .productgrid--sidebar-title--small {
+    margin: 0;
+    font-size: 0.95em;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  #shopify-section-{{ section.id }} .productgrid--sidebar-icon {
+    display: inline-flex;
+    transition: transform 0.2s ease;
+  }
+  #shopify-section-{{ section.id }} .productgrid--sidebar-button[aria-expanded="true"] .productgrid--sidebar-icon {
+    transform: rotate(180deg);
+  }
+
+  /* Filter rows */
+  #shopify-section-{{ section.id }} .filter-group .filter-group--wrapper {
+    padding: 0.25rem 0.5rem 0.75rem;
+  }
+  #shopify-section-{{ section.id }} .filter-item {
+    list-style: none;
+    margin: 0;
+  }
+  #shopify-section-{{ section.id }} .filter-item .filter-link,
+  #shopify-section-{{ section.id }} .filter-item > a {
+    display: flex;
+    align-items: center;
+    padding: 0.4rem 0.5rem;
+    border-radius: 6px;
+    text-decoration: none;
+    color: inherit;
+    line-height: 1.3;
+    transition: background-color 0.15s ease;
+  }
+  #shopify-section-{{ section.id }} .filter-item .filter-link:hover,
+  #shopify-section-{{ section.id }} .filter-item > a:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+  #shopify-section-{{ section.id }} .filter-item[aria-current="true"] > a {
+    font-weight: 600;
+    color: {{ filter_accent }};
+  }
+  /* Use the theme's native checkbox icon (it draws its own box); just align it. */
+  #shopify-section-{{ section.id }} .filter-icon--checkbox {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+  }
+  #shopify-section-{{ section.id }} .filter-text {
+    flex: 1 1 auto;
+  }
+  #shopify-section-{{ section.id }} .filter-item--toggle-more .filter-text--link {
+    display: inline-block;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.85em;
+    text-decoration: underline;
+    opacity: 0.8;
+  }
+  #shopify-section-{{ section.id }} .filter-item--hidden {
+    display: none;
+  }
+{% endstyle %}
+
+{% comment %}
+  VapeHQ: the left filter sidebar is forced on in code (independent of the
+  "Show sidebar" customizer toggle) so it activates on theme import without
+  any admin changes. It still only appears when the collection has tags.
+{% endcomment %}
+{% assign show_filters = true %}
+
+{% if collection.all_tags.size > 0 %}
+  {% assign show_filter_trigger = true %}
+{% endif %}
+
+{% if section.blocks.size > 0 or collection.all_tags.size > 0 %}
+  {% comment %}
+    Sidebar shows when there are tags to filter on, or there are menu blocks.
+  {% endcomment %}
+  {% assign show_sidebar = true %}
+{% endif %}
+
+{% assign paginate_by = section.settings.products_per_page_range %}
+{% if template contains 'view-24' %}
+  {% assign paginate_by = 24 %}
+{% elsif template contains 'view-36' %}
+  {% assign paginate_by = 36 %}
+{% elsif template contains 'view-48' %}
+  {% assign paginate_by = 48 %}
+{% endif %}
+
+{%- capture collection_classes -%}
+  {% if show_sidebar %}
+    layout--has-sidebar
+  {% else %}
+    layout--no-sidebar
+  {% endif %}
+
+  {% if section.settings.default_view == 'grid-view' %}
+    productgrid-gridview
+  {% else %}
+    productgrid-listview
+  {% endif %}
+{%- endcapture -%}
+
+
+
+{% paginate collection.products by paginate_by %}
+  
+  <div class="productgrid--outer {{ collection_classes | strip_newlines }}">
+    <div class="productgrid--masthead"{% if colect contains collection.handle %} style="min-height: 135px;"{% endif %}>
+
+     <h1 style="margin-bottom:15px; margin-top:0px; text-align:center;">{{ collection.title }}</h1>
+
+
+<!-- PROBLEMATIC -->
+  
+<div class="mobiledesc" style="margin-bottom:15px; text-align:center;">
+  <div id="truncated-product-description">
+    <span style="line-height:1.5">{{ collection.description | truncatewords: 15 }}</span>
+    <p style="margin-top:5px;">
+      <span id="read-more" class="read-additional">Read more <i class="fa-sharp fa-solid fa-circle-plus"></i></span>
+    </p>
+  </div>
+  <div id="product-description">
+    <span style="line-height:1.5">{{ collection.description }}</span> 
+    <p style="margin-top:5px;">
+      <span id="read-less" class="read-additional">Read less <i class="fa-sharp fa-solid fa-circle-minus"></i></span>
+    </p>
+  </div>
+</div>
+
+<div class="desktopdesc" style="margin-bottom:15px; text-align:center;{% if colect contains collection.handle %} padding-left: 19%; padding-right: 19%;{% endif %}">
+  <span style="line-height:1.5">{{ collection.description }}</span>
+</div>
+
+{% if request.path contains "/pages/multibuy-deals" %}
+    <style>
+      .headerBanner {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+      }
+      .headerBanner img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      @media screen and (min-width: 1024px) {
+        .mobileImage {
+          display: none;
+        }
+        .desktopImage {
+          display: block;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .mobileImage {
+          display: block;
+        }
+        .desktopImage {
+          display: none;
+        }
+      }
+    </style>
+    <div class="headerBanner">
+      <a href="https://vapehq.co.uk/collections/qseries">
+        <img class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/QSeries_Banner_c4d77f22-2c0c-4041-90ec-d83df0a97118.png?v=1743092360">
+      </a>
+    </div>
+{% endif %}
+
+
+{% if collection.handle == "qseries" %}
+    <style>
+      .headerBanner {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+      }
+      .headerBanner img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      @media screen and (min-width: 1024px) {
+        .mobileImage {
+          display: none;
+        }
+        .desktopImage {
+          display: block;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .mobileImage {
+          display: block;
+        }
+        .desktopImage {
+          display: none;
+        }
+      }
+    </style>
+    <div class="headerBanner">
+      <a href="https://vapehq.co.uk/collections/qseries">
+        <img class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/QSeries_Banner_c4d77f22-2c0c-4041-90ec-d83df0a97118.png?v=1743092360">
+      </a>
+    </div>
+{% endif %}   
+
+{% if collection.handle == "pure" %}
+    <style>
+      .headerBanner {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+      }
+      .headerBanner img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      @media screen and (min-width: 1024px) {
+        .mobileImage {
+          display: none;
+        }
+        .desktopImage {
+          display: block;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .mobileImage {
+          display: block;
+        }
+        .desktopImage {
+          display: none;
+        }
+      }
+    </style>
+    <div class="headerBanner">
+      <a href="https://vapehq.co.uk/collections/pure">
+        <img class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Pure_Banner.jpg?v=1758812619">
+      </a>
+    </div>
+{% endif %}   
+
+{% if collection.handle == "elux" %}
+    <style>
+      .headerBanner {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+      }
+      .headerBanner img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      @media screen and (min-width: 1024px) {
+        .mobileImage {
+          display: none;
+        }
+        .desktopImage {
+          display: block;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .mobileImage {
+          display: block;
+        }
+        .desktopImage {
+          display: none;
+        }
+      }
+    </style>
+    <div class="headerBanner">
+      <a href="">
+        <img class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/ELUX_Banner.jpg?v=17594007569">
+      </a>
+    </div>
+{% endif %}   
+
+{% if collection.handle == "elux-nic-salts" %}
+    <style>
+      .headerBanner {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+      }
+      .headerBanner img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      @media screen and (min-width: 1024px) {
+        .mobileImage {
+          display: none;
+        }
+        .desktopImage {
+          display: block;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .mobileImage {
+          display: block;
+        }
+        .desktopImage {
+          display: none;
+        }
+      }
+    </style>
+    <div class="headerBanner">
+      <a href="">
+        <img class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/ELUX_Banner.jpg?v=17594007569">
+      </a>
+    </div>
+{% endif %}  
+
+{% if collection.handle == "just-juice" %}
+    <style>
+      .headerBanner {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+      }
+      .headerBanner img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      @media screen and (min-width: 1024px) {
+        .mobileImage {
+          display: none;
+        }
+        .desktopImage {
+          display: block;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .mobileImage {
+          display: block;
+        }
+        .desktopImage {
+          display: none;
+        }
+      }
+    </style>
+    <div class="headerBanner">
+      <a href="">
+        <img class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Just_Juice_-_Collection_Banner.jpg?v=1772114664">
+      </a>
+    </div>
+{% endif %}
+
+{% if collection.handle == "nicotine-salts" %}
+    <style>
+      .headerBanner {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+      }
+      .headerBanner img {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      @media screen and (min-width: 1024px) {
+        .mobileImage {
+          display: none;
+        }
+        .desktopImage {
+          display: block;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .mobileImage {
+          display: block;
+        }
+        .desktopImage {
+          display: none;
+        }
+      }
+    </style>
+    <div class="headerBanner">
+      <a href="">
+        <img class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Nicotine_Salts_-_Collection_Banner.jpg?v=1772114664">
+      </a>
+    </div>
+{% endif %}
+
+{% if collection.handle == "hardware" %}
+    <style>
+      .headerBanner {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+      }
+      .headerBanner img {
+        width: 100%;
+        height: auto;
+      }
+      @media screen and (min-width: 1024px) {
+        .mobileImage {
+          display: none;
+        }
+        .desktopImage {
+          display: block;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .mobileImage {
+          display: block;
+        }
+        .desktopImage {
+          display: none;
+        }
+      }
+    </style>
+    <div class="headerBanner">
+      <a href="https://vapehq.co.uk/collections/hardware">
+        <img class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Devices_Collection_Mobile_Full.png?v=1743077162" alt="Hardware Collection">
+        <img class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Device_Collection_Full.png?v=1743077044" alt="Hardware Collection">
+      </a>
+    </div>
+{% endif %}
+
+{% if collection.handle == "10ml-e-liquid" %}
+    <style>
+      .headerBanner{
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .headerBanner img {
+        width: calc(calc(100% / 3) - 8px);
+        /*display: inline-block;*/
+        float: left;
+      }
+      @media screen and (min-width: 1024px) {
+        .mobileImage {
+          display: none;
+        }
+        .desktopImage {
+          display: block;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .mobileImage {
+          display: block;
+        }
+        .desktopImage {
+          display: none;
+        }
+      }
+    </style>
+    <div class="headerBanner">
+      <a href="https://vapehq.co.uk/collections/qsalts"><img style="margin-right: 10px;" class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Devices_Collection_Mobile_QSALTS.jpg?v=1750083536"></a>
+      <a href="https://vapehq.co.uk/collections/pure"><img style="margin-right: 10px;" class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/PURE_BLOCK_MOBILE.png?v=1750083536"></a>
+      <a href="https://vapehq.co.uk/collections/elux-nic-salts"><img class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/ELUX_BLOCK_MOBILE.png?v=1750083538"></a>
+      <a href="https://vapehq.co.uk/collections/qsalts"><img style="margin-right: 10px;" class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Devices_Collection_Desktop_QSALTS.jpg?v=1750083378"></a>
+      <a href="https://vapehq.co.uk/collections/pure"><img style="margin-right: 10px;" class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/PURE_BLOCK_DESKTOP.png?v=1750083378"></a>
+      <a href="https://vapehq.co.uk/collections/elux-nic-salts"><img class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/ELUX_BLOCK_DESKTOP.png?v=1750083378"></a>
+      <div style="clear: both;"></div>
+    </div>
+  {% endif %}
+      
+
+{% if collection.handle == "iqos" %}
+    <style>
+      .headerBanner{
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .headerBanner img {
+        width: calc(calc(100% / 3) - 8px);
+        /*display: inline-block;*/
+        float: left;
+      }
+      @media screen and (min-width: 1024px) {
+        .mobileImage {
+          display: none;
+        }
+        .desktopImage {
+          display: block;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .mobileImage {
+          display: block;
+        }
+        .desktopImage {
+          display: none;
+        }
+      }
+    </style>
+    <div class="headerBanner">
+      <a href="https://vapehq.co.uk/collections/iqos-terea"><img style="margin-right: 10px;" class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Devices_Collection_Mobile_Terea.png?v=1749636603"></a>
+      <a href="https://vapehq.co.uk/collections/iqos-devices"><img style="margin-right: 10px;" class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Devices_Collection_Mobile_IQOS_DEVICES.png?v=1749636603"></a>
+      <a href="https://vapehq.co.uk/collections/iqos/alternative-nicotine"><img class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Devices_Collection_Mobile_ZYN.png?v=1749636603"></a>
+      <a href="https://vapehq.co.uk/collections/iqos-terea"><img style="margin-right: 10px;" class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Flash_Sale_Collection_Terea.png?v=1749636596"></a>
+      <a href="https://vapehq.co.uk/collections/iqos-devices"><img style="margin-right: 10px;" class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Flash_Sale_Collection_IQOS_DEVICES.png?v=1749636596"></a>
+      <a href="https://vapehq.co.uk/collections/iqos/alternative-nicotine"><img class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Flash_Sale_Collection_ZYN.png?v=1749636596"></a>
+      <div style="clear: both;"></div>
+    </div>
+  {% endif %}
+      
+{% if collection.handle == "flash-sale" %}
+    <style>
+      .headerBanner{
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .headerBanner img {
+        width: calc(calc(100% / 3) - 8px);
+        /*display: inline-block;*/
+        float: left;
+      }
+      @media screen and (min-width: 1024px) {
+        .mobileImage {
+          display: none;
+        }
+        .desktopImage {
+          display: block;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .mobileImage {
+          display: block;
+        }
+        .desktopImage {
+          display: none;
+        }
+      }
+    </style>
+    <div class="headerBanner">
+      <a href="https://vapehq.co.uk/collections/flash-sale/100ml"><img style="margin-right: 10px;" class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/image_2025-03-27_100327548.png?v=1743069811"></a>
+      <a href="https://vapehq.co.uk/collections/flash-sale/10ml"><img style="margin-right: 10px;" class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/image_2025-03-27_100300966.png?v=1743069785"></a>
+      <a href="https://vapehq.co.uk/collections/flash-sale/hardware"><img class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/image_2025-03-27_100315127.png?v=1743069799"></a>
+      <a href="https://vapehq.co.uk/collections/flash-sale/100ml"><img style="margin-right: 10px;" class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/image_2025-03-27_100351669.png?v=1743069835"></a>
+      <a href="https://vapehq.co.uk/collections/flash-sale/10ml"><img style="margin-right: 10px;" class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/image_2025-03-27_100407247.png?v=1743069850"></a>
+      <a href="https://vapehq.co.uk/collections/flash-sale/hardware"><img class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/image_2025-03-27_100422961.png?v=1743069867"></a>
+      <div style="clear: both;"></div>
+    </div>
+  {% endif %}
+
+  {% if collection.handle == "spare-pods" %}
+    <style>
+      .headerBanner{
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .headerBanner img {
+        width: calc(calc(100% / 3) - 8px);
+        /*display: inline-block;*/
+        float: left;
+      }
+      @media screen and (min-width: 1024px) {
+        .mobileImage {
+          display: none;
+        }
+        .desktopImage {
+          display: block;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .mobileImage {
+          display: block;
+        }
+        .desktopImage {
+          display: none;
+        }
+      }
+    </style>
+    <div class="headerBanner">
+      <a href="https://vapehq.co.uk/collections/spare-pods/QSeries"><img style="margin-right: 10px;" class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/QSERIES_MOBILE.png?v=1754397655"></a>
+      <a href="https://vapehq.co.uk/collections/spare-pods/Oxva"><img style="margin-right: 10px;" class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/OXVA_MOBILE.png?v=1754397655"></a>
+      <a href="https://vapehq.co.uk/collections/spare-pods/vaporesso"><img class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/VAPORESSO_MOBILE.png?v=1754397654"></a>
+      <a href="https://vapehq.co.uk/collections/spare-pods/QSeries"><img style="margin-right: 10px;" class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/QSERIES_DESKTOP.png?v=1754397655"></a>
+      <a href="https://vapehq.co.uk/collections/spare-pods/Oxva"><img style="margin-right: 10px;" class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/OXVA_DESKTOP.png?v=1754397655"></a>
+      <a href="https://vapehq.co.uk/collections/spare-pods/vaporesso"><img class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/VAPORESSO_DESKTOP.png?v=1754397654"></a>
+      <div style="clear: both;"></div>
+    </div>
+  {% endif %}
+
+    {% if collection.handle == "alternative-nicotine" %}
+    <style>
+      .headerBanner{
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .headerBanner img {
+        width: calc(calc(100% / 3) - 8px);
+        /*display: inline-block;*/
+        float: left;
+      }
+      @media screen and (min-width: 1024px) {
+        .mobileImage {
+          display: none;
+        }
+        .desktopImage {
+          display: block;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .mobileImage {
+          display: block;
+        }
+        .desktopImage {
+          display: none;
+        }
+      }
+    </style>
+    <div class="headerBanner">
+      <a href="https://vapehq.co.uk/collections/alternative-nicotine?constraint=nicotine-pouch&view=view-36&grid_list=grid-view"><img style="margin-right: 10px;" class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/MOBILE_POUCHES.png?v=1755003929"></a>
+      <a href="https://vapehq.co.uk/collections/alternative-nicotine/products/jolt-nicotine-strips"><img style="margin-right: 10px;" class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/MOBILE_STRIPS.png?v=1755003929"></a>
+      <a href="https://vapehq.co.uk/collections/alternative-nicotine/products/crystalize-nicpix"><img class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/MOBILE_PICKS.png?v=1755003929"></a>
+      <a href="https://vapehq.co.uk/collections/alternative-nicotine?constraint=nicotine-pouch&view=view-36&grid_list=grid-view"><img style="margin-right: 10px;" class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/DESKTOP_POUCHES.png?v=1755003929"></a>
+      <a href="https://vapehq.co.uk/collections/alternative-nicotine/products/jolt-nicotine-strips"><img style="margin-right: 10px;" class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/DESKTOP_STRIPS.png?v=1755003929"></a>
+      <a href="https://vapehq.co.uk/collections/alternative-nicotine/products/crystalize-nicpix"><img class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/DESKTOP_PICKS.png?v=1755003929"></a>
+      <div style="clear: both;"></div>
+    </div>
+  {% endif %}
+
+    {% if collection.handle == "pod-kits" %}
+    <style>
+      .headerBanner{
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .headerBanner img {
+        width: calc(calc(100% / 3) - 8px);
+        /*display: inline-block;*/
+        float: left;
+      }
+      @media screen and (min-width: 1024px) {
+        .mobileImage {
+          display: none;
+        }
+        .desktopImage {
+          display: block;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .mobileImage {
+          display: block;
+        }
+        .desktopImage {
+          display: none;
+        }
+      }
+    </style>
+    <div class="headerBanner">
+      <a href="https://vapehq.co.uk/collections/starter-vape-kits"><img style="margin-right: 10px;" class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Refillable_Pod_Kits_Mobile.png?v=1763986201"></a>
+      <a href="https://vapehq.co.uk/collections/prefilled-vape-kits"><img style="margin-right: 10px;" class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Prefilled_Pod_Kits_MOBILE.png?v=1763986201"></a>
+      <a href="https://vapehq.co.uk/collections/4-1-prefilled-big-puff-vape-kits"><img class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Pod_Kits_Mobile.png?v=1763986202"></a>
+      <a href="https://vapehq.co.uk/collections/starter-vape-kits"><img style="margin-right: 10px;" class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Refillable_Pod_Kits_Desktop.png?v=1763986201"></a>
+      <a href="https://vapehq.co.uk/collections/prefilled-vape-kits"><img style="margin-right: 10px;" class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Prefilled_Pod_Kits_DESKTOP.png?v=1763986201"></a>
+      <a href="https://vapehq.co.uk/collections/4-1-prefilled-big-puff-vape-kits"><img class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/Pod_Kits_Desktop.png?v=1763986201"></a>
+      <div style="clear: both;"></div>
+    </div>
+  {% endif %}
+
+      {% if collection.handle == "spare-coils" %}
+    <style>
+      .headerBanner{
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .headerBanner img {
+        width: calc(calc(100% / 3) - 8px);
+        /*display: inline-block;*/
+        float: left;
+      }
+      @media screen and (min-width: 1024px) {
+        .mobileImage {
+          display: none;
+        }
+        .desktopImage {
+          display: block;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .mobileImage {
+          display: block;
+        }
+        .desktopImage {
+          display: none;
+        }
+      }
+    </style>
+    <div class="headerBanner">
+      <a href="https://vapehq.co.uk/collections/spare-coils/innokin"><img style="margin-right: 10px;" class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/INNOKIN_MOBILE.png?v=1754406137"></a>
+      <a href="https://vapehq.co.uk/collections/spare-coils/aspire"><img style="margin-right: 10px;" class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/ASPIRE_MOBILE.png?v=1754406137"></a>
+      <a href="https://vapehq.co.uk/collections/spare-coils/smok"><img class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/SMOK_MOBILE.png?v=1754406137"></a>
+      <a href="https://vapehq.co.uk/collections/spare-coils/innokin"><img style="margin-right: 10px;" class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/INNOKIN_DESKTOP.png?v=1754406137"></a>
+      <a href="https://vapehq.co.uk/collections/spare-coils/aspire"><img style="margin-right: 10px;" class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/ASPIRE_DESKTOP.png?v=1754406137"></a>
+      <a href="https://vapehq.co.uk/collections/spare-coils/smok"><img class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/SMOK_DESKTOP.png?v=1754406137"></a>
+      <div style="clear: both;"></div>
+    </div>
+  {% endif %}
+
+  {% if collection.handle == "all-vape-liquid" %}
+    <style>
+      .headerBanner{
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .headerBanner img {
+        width: calc(calc(100% / 2) - 12px);
+        /*display: inline-block;*/
+        float: left;
+      }
+      @media screen and (min-width: 1024px) {
+        .mobileImage {
+          display: none;
+        }
+        .desktopImage {
+          display: block;
+        }
+      }
+      @media screen and (max-width: 1023px) {
+        .mobileImage {
+          display: block;
+        }
+        .desktopImage {
+          display: none;
+        }
+      }
+    </style>
+    <div class="headerBanner">
+      <a href="https://vapehq.co.uk/collections/all-vape-liquid/sp-freebasenicotine"><img style="margin-right: 10px;" class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/FREEBASE_MOBILE.png?v=1755005812"></a>
+      <a href="https://vapehq.co.uk/collections/nicotine-salts"><img style="margin-right: 10px;" class="mobileImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/SALTS_MOBILE.png?v=1755005812"></a>
+      <a href="https://vapehq.co.uk/collections/all-vape-liquid/sp-freebasenicotine"><img style="margin-right: 10px;" class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/FREEBASE_DESKTOP.png?v=1755005812"></a>
+      <a href="https://vapehq.co.uk/collections/nicotine-salts"><img style="margin-right: 10px;" class="desktopImage" src="https://cdn.shopify.com/s/files/1/2600/2254/files/SALTS_DESKTOP.png?v=1755005811"></a>
+      <div style="clear: both;"></div>
+    </div>
+  {% endif %}
+<script>
+let read_more = document.getElementById('read-more')
+let read_less = document.getElementById('read-less');
+let truncated_description = document.getElementById('truncated-product-description');
+let full_description = document.getElementById('product-description');
+
+read_more.addEventListener('click', showHideDescription)
+read_less.addEventListener('click', showHideDescription)
+
+function showHideDescription(){
+  let ID = this.id
+  if(ID === "read-more"){
+    truncated_description.style.display = "none";
+    full_description.style.display = "block";
+  }else {
+    truncated_description.style.display = "block";
+    full_description.style.display = "none";    
+  }
+}
+</script>
+
+  <!-- PROBLEMATIC -->
+
+
+
+    {% comment %}  {% if collection.description != blank %}
+        <div style="margin-top:-20px;" class="collection--description rte">
+          {{ collection.description }}
+        </div>
+      {% endif %} {% endcomment %}
+   
+  {% if collection.metafields.topmenu['image'] %}
+        <div align="center">{{ collection.metafields.topmenu.image }}</div>
+    {% endif %}
+  
+  {% if collection.metafields.topmenu['flavour'] %}
+       {% include 'flavour-selector' %}
+  {% endif %}
+
+  {% if collection.metafields.topmenu['size'] %}
+       {% include 'size-selector' %}
+  {% endif %}
+
+  {% if collection.metafields.topmenu['brand'] %}
+       {% include 'coil-brand' %}
+  {% endif %}
+
+  {% if collection.metafields.topmenu['brandcoil'] %}
+       {% include 'pod-brand' %}
+  {% endif %}
+    {% if collection.metafields.topmenu['variant'] %}
+       {% include 'just-juice-selector' %}
+  {% endif %}
+
+  <script>
+(function(w){
+    w.addEventListener('load', function(){
+        const   btn_left = document.getElementById('btn-left'),
+                btn_right = document.getElementById('btn-right'),
+                content = document.getElementById('scroller');
+        const content_scroll_width = content.scrollWidth;
+        let content_scoll_left = content.scrollLeft;
+        btn_right.addEventListener('click', () => {
+            content_scoll_left += 100;
+            if (content_scoll_left >= content_scroll_width) { content_scoll_left = content_scroll_width; }
+            content.scrollLeft = content_scoll_left;
+        });
+        btn_left.addEventListener('click', () => {
+            content_scoll_left -= 100;
+            if (content_scoll_left <= 0) {
+                content_scoll_left = 0;
+            }
+            content.scrollLeft = content_scoll_left;
+        });
+    });
+})(window);
+</script>
+  <script>
+(function(w){
+    w.addEventListener('load', function(){
+        const   btn_left = document.getElementById('btn-left2'),
+                btn_right = document.getElementById('btn-right2'),
+                content = document.getElementById('scroller2');
+        const content_scroll_width = content.scrollWidth;
+        let content_scoll_left = content.scrollLeft;
+        btn_right.addEventListener('click', () => {
+            content_scoll_left += 100;
+            if (content_scoll_left >= content_scroll_width) { content_scoll_left = content_scroll_width; }
+            content.scrollLeft = content_scoll_left;
+        });
+        btn_left.addEventListener('click', () => {
+            content_scoll_left -= 100;
+            if (content_scoll_left <= 0) {
+                content_scoll_left = 0;
+            }
+            content.scrollLeft = content_scoll_left;
+        });
+    });
+})(window);
+</script>
+
+  {%- capture tag_url -%}{{ current_tags }}{%- endcapture -%}
+  <script>
+  var tag = '{{ current_tags }}';
+  var selector = '{{ current_tags }}selector';
+  selector = selector.toLowerCase().replace(/\b[a-z]/g, function(letter) {
+    return letter.toUpperCase();
+});
+  if (window.location.href.indexOf(tag) > -1)
+document.getElementById(selector).style = 'background-color: #044687 !important; border-color: #044687';
+  console.log(selector)
+  console.log(tag)
+  </script>
+  
+{% comment %}
+<script type="text/javascript">
+if (window.location.href.indexOf("Fruit") > -1)
+document.getElementById('fruitselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("Menthol") > -1)
+document.getElementById('mentholselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("Dessert") > -1)
+document.getElementById('dessertselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("Drinks") > -1)
+document.getElementById('drinkssselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("Sweets") > -1)
+document.getElementById('sweetsselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("Tobacco") > -1)
+document.getElementById('tobaccoselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("Other") > -1)
+document.getElementById('otherselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("nicotine-shots") > -1)
+document.getElementById('nicshotselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("nicotine-salts") > -1)
+document.getElementById('nicsaltselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("10ml-e-liquid") > -1)
+document.getElementById('10mlselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("50ml-e-liquid") > -1)
+document.getElementById('50mlselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("100ml-e-liquid") > -1)
+document.getElementById('100mlselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("Innokin") > -1)
+document.getElementById('innokinselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("Uwell") > -1)
+document.getElementById('uwellselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("Oxva") > -1)
+document.getElementById('oxvaselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("Smok") > -1)
+document.getElementById('smokselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("Vaporesso") > -1)
+document.getElementById('vaporessoselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("Voopoo") > -1)
+document.getElementById('voopooselector').style = 'background-color: #044687 !important; border-color: #044687';
+else if (window.location.href.indexOf("Aspire") > -1)
+document.getElementById('aspireselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("Vaptio") > -1)
+document.getElementById('vaptioselector').style = 'background-color: #044687 !important; border-color: #044687';
+  else if (window.location.href.indexOf("Freemax") > -1)
+document.getElementById('freemaxselector').style = 'background-color: #044687 !important; border-color: #044687';
+  </script>
+{% endcomment %}
+  
+  
+      {% for block in section.blocks %}
+        {% if block.type == 'subcollection' and linklists[collection.handle].links.size > 0 %}
+          {% render 'subcollections-collection', type: 'block', block: block, layout_type: 'slideshow' %}
+          <div class="subcollections-collection__border"></div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+    {% if show_sidebar %}
+      {%
+        render 'product-grid-sidebar',
+        filter_style: 'tags',
+        filter_position: 'above_menus',
+        filter_limit: 8,
+        menu_depth: section.settings.menu_depth_range
+      %}
+    {% endif %}
+    <div class="productgrid--wrapper">
+
+      {% if show_filter_trigger or section.settings.sort_by or section.settings.show_by or section.settings.grid_list %}
+        {% capture utility_class %}
+          productgrid--utils
+
+          {% if show_filter_trigger or section.settings.sort_by or section.settings.grid_list %}
+            productgrid--utils--visible-mobile
+          {% endif %}
+
+          {% unless section.settings.show_by or section.settings.sort_by or section.settings.grid_list %}
+            productgrid--utils--hidden-desktop
+          {% endunless %}
+        {% endcapture %}
+        <div class="productgrid--utils-sticky-intersection" data-utils-intersection-target></div>
+        <nav
+          class="
+            {{ utility_class | strip_newlines }}
+            productgrid--utils-container
+            productgrid--utils-sticky
+          "
+          aria-label="{{ 'general.accessibility.nav_collection_utilities' | t }}"
+          data-sticky-utils
+        >
+          {% if show_filter_trigger %}
+            {%- assign filter_count = 0 -%}
+            {%- if current_tags.size > 0 -%}
+              {%- assign filter_count = current_tags.size -%}
+            {%- endif -%}
+            <div class="productgrid--utils utils-filter">
+              <button
+                class="utils-filter-button"
+                type="button"
+                aria-label="{{ 'product_grid.filters.title_count' | t: count: filter_count }}"
+                data-productgrid-trigger-filters
+              >
+                <span class="utils-filter-icon">
+                  {% render 'icon-library', id: 'icon-filters' %}
+                </span>
+                <span class="utils-filter-text">
+                  {{- 'product_grid.filters.title_count' | t: count: filter_count -}}
+                </span>
+              </button>
+            </div>
+          {% endif %}
+
+          {%- if section.settings.sort_by -%}
+            {%-
+              render 'product-grid-sortby',
+              type: 'select',
+            -%}
+          {%- endif -%}
+
+          {%- if section.settings.show_by or section.settings.grid_list -%}
+            <div
+              class="
+                productgrid--utils
+                utils-view
+                {% if section.settings.grid_list == false %}
+                  utils-hide
+                {% endif %}
+              "
+            >
+              <div class="utils-view-container">
+                {%- if section.settings.show_by -%}
+                  {%-
+                    render 'product-grid-showby',
+                    show_by: paginate_by,
+                  -%}
+                {%- endif -%}
+
+                {% if section.settings.grid_list %}
+                  <div class="utils-viewtoggle">
+                    <span class="utils-viewtoggle-label">
+                      {{ 'product_grid.view_as.title' | t }}
+                    </span>
+
+                    <button
+                      class="utils-viewtoggle-button {% if section.settings.default_view == 'grid-view' %}active{% endif %}"
+                      data-collection-view="grid-view"
+                      aria-label="grid view"
+                    >
+                      {% render 'icon-library', id: 'icon-grid' %}
+                    </button>
+
+                    <button
+                      class="utils-viewtoggle-button {% if section.settings.default_view == 'list-view' %}active{% endif %}"
+                      data-collection-view="list-view"
+                      aria-label="list view"
+                    >
+                      {% render 'icon-library', id: 'icon-list' %}
+                    </button>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          {%- endif -%}
+        </nav>
+      {% endif %}
+      {% if current_tags.size > 0 %}
+        <div class="productgrid--filters">
+          {%- render 'product-grid-tags-active' %}
+        </div>
+      {% endif %}
+
+      {% if collection.products.size > 0 %}
+        <ul class="productgrid--items products-per-row-{{- section.settings.products_per_row -}}">
+          {% for product in collection.products %}
+              {% if product.available %}
+            {%
+              render 'product-grid-item',
+              product: product
+            %}
+            {% endif %}
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="productgrid--no-results">
+          <h2 class="productgrid--no-results-title">
+            {%- if collection.all_products_count == 0 -%}
+              {{ 'product_grid.no_results.empty' | t }}
+            {%- else -%}
+              {{ 'product_grid.no_results.tags_empty' | t }}
+            {%- endif -%}
+          </h2>
+
+          <a class="productgrid--no-results-button" href="{{ routes.all_products_collection_url }}">
+            {{ 'search.general.view_all_products' | t }}
+          </a>
+        </div>
+      {% endif %}
+
+      {%
+        render 'pagination', paginate: paginate,
+        grid_list: true
+      %}
+    </div>
+  </div>
+  {% endpaginate %}
+  <div align="center">
+    {% render 'collection-bottom' %}
+  {% comment %}<div style="max-width:70%;">{{ shop.metafields.judgeme.featured_carousel }}</div>{% endcomment %}
+    </div>
+{% if colect contains collection.handle %}</div>{% endif %}
+
+
+{%- if section.settings.sort_by -%}
+  {%-
+    render 'product-grid-sortby',
+    type: 'modal',
+  -%}
+{%- endif -%}
+
+{% render 'quick-shop' %}
+
+{% schema %}
+{
+  "name": "Collection pages",
+  "class": "collection--section section--canonical",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_collection_image",
+      "label": "Show collection image",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "products_per_page_range",
+      "label": "Products per page",
+      "min": 24,
+      "max": 48,
+      "step": 12,
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "products_per_row",
+      "label": "Products per row",
+      "options": [
+        {
+          "label": "3",
+          "value": "3"
+        },
+        {
+          "label": "4",
+          "value": "4"
+        }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "header",
+      "content": "Utility bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "sort_by",
+      "label": "Show \"Sort by\" Dropdown",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_by",
+      "label": "Show products per page links",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "grid_list",
+      "label": "Show grid/list view toggle",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "default_view",
+      "label": "Default view",
+      "options": [
+        {
+          "label": "Grid",
+          "value": "grid-view"
+        },
+        {
+          "label": "List",
+          "value": "list-view"
+        }
+      ],
+      "default": "grid-view"
+    },
+    {
+      "type": "header",
+      "content": "Sidebar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sidebar",
+      "label": "Show sidebar",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "filter_style",
+      "label": "Filters",
+      "info": "[Learn more](https://support.pixelunion.net/hc/en-us/articles/360026081933-Setting-up-product-tag-filters-in-Empire)",
+      "options": [
+        {
+          "value": "none",
+          "label": "Hide filters"
+        },
+        {
+          "value": "tags",
+          "label": "By tag"
+        },
+        {
+          "value": "groups",
+          "label": "By group"
+        }
+      ],
+      "default": "tags"
+    },
+    {
+      "type": "select",
+      "id": "filter_groups",
+      "label": "Filter groups",
+      "options": [
+        {
+          "value": "expand_all",
+          "label": "Expand all groups"
+        },
+        {
+          "value": "expand_first",
+          "label": "Expand the first group"
+        },
+        {
+          "value": "collapse_all",
+          "label": "Collapse all groups"
+        }
+      ],
+      "default": "expand_first"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filter_product_count",
+      "label": "Show product counts",
+      "default": false
+    },
+    {
+      "id": "filter_limit",
+      "type": "select",
+      "label": "Hide additional tags after",
+      "options": [
+        {
+          "value": "5",
+          "label": "5 tags"
+        },
+        {
+          "value": "6",
+          "label": "6 tags"
+        },
+        {
+          "value": "8",
+          "label": "8 tags"
+        },
+        {
+          "value": "10",
+          "label": "10 tags"
+        },
+        {
+          "value": "15",
+          "label": "15 tags"
+        },
+        {
+          "value": "20",
+          "label": "20 tags"
+        },
+        {
+          "value": "999",
+          "label": "Show all tags"
+        }
+      ],
+      "default": "999"
+    },
+    {
+      "type": "select",
+      "id": "filter_position",
+      "label": "Filters position",
+      "options": [
+        {
+          "value": "above_menus",
+          "label": "Above menus"
+        },
+        {
+          "value": "below_menus",
+          "label": "Below menus"
+        }
+      ],
+      "default": "above_menus"
+    },
+    {
+      "type": "text",
+      "id": "grid_categories",
+      "label": "Display filters as grid",
+      "info": "List groups to display in an alternate grid format, like “Size, Price”. [Learn more](https://support.pixelunion.net/hc/en-us/articles/360026081933-Setting-up-product-tag-filters-in-Empire)"
+    },
+    {
+      "type": "textarea",
+      "id": "custom_ordered_categories",
+      "label": "Group order",
+      "info": "Define a custom order for groups, like “Color, Brand, Size”. Other groups will appear at the bottom."
+    },
+    {
+      "type": "textarea",
+      "id": "custom_ordered_tags",
+      "label": "Tag order",
+      "info": "Define a custom order for tags, like “Size_S, Size_M, Size_L”. Items must exactly match tag name, including group prefix. Other tags will appear at the bottom."
+    },
+    {
+      "type": "textarea",
+      "id": "excluded_tags",
+      "label": "Exclude tags",
+      "info": "Specify which tag(s) should be hidden from your customers, like “Red, T-shirts, Small”. To exclude a group tag, make sure to specify the full name of the tag. For example: ”Size_Medium.”"
+    },
+    {
+      "type": "textarea",
+      "id": "excluded_groups",
+      "label": "Exclude groups",
+      "info": "Specify which group(s) should be hidden from your customers, like “Color, Brand, Size”. This will hide the group heading along with all of the tags within the group."
+    },
+    {
+      "type": "range",
+      "id": "menu_depth_range",
+      "label": "Menu depth visibility",
+      "info": "[Learn more](https://help.shopify.com/manual/sell-online/online-store/menus-and-links#create-a-drop-down-menu)",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 1
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu",
+      "settings": [
+        {
+          "id": "menu",
+          "type": "link_list",
+          "label": "Menu",
+          "info": "This menu will show as many dropdown items as specified in \"Menu depth visibility\"."
+        },
+        {
+          "type": "checkbox",
+          "id": "show_prod_count",
+          "label": "Show product counts",
+          "info": "Only applies to collection links.",
+          "default": true
+        }
+      ],
+      "limit": 10
+    },
+    {
+      "type": "subcollection",
+      "name": "Subcollections",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Section is empty? [Learn how to add collections to your subcollections section](https://support.pixelunion.net/hc/en-us/articles/360026084433)"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_product_count",
+          "label": "Show product counts",
+          "default": false
+        },
+        {
+          "type": "select",
+          "id": "thumbnail_image",
+          "label": "Thumbnail image",
+          "options": [
+            {
+              "value": "product-image",
+              "label": "Product image"
+            },
+            {
+              "value": "collection-image",
+              "label": "Collection image"
+            }
+          ],
+          "default": "product-image"
+        },
+        {
+          "type": "select",
+          "id": "image_crop",
+          "label": "Image crop",
+          "options": [
+            {
+              "label": "Original",
+              "value": "original"
+            },
+            {
+              "label": "Square",
+              "value": "square"
+            },
+            {
+              "label": "Circle",
+              "value": "circle"
+            },
+            {
+              "label": "Rounded rectangle",
+              "value": "round"
+            }
+          ],
+          "default": "original"
+        }
+      ],
+      "limit": 1
+    }
+  ]
+}
+
+{% endschema %}

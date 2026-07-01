@@ -1,0 +1,41 @@
+{% layout none %}<?xml version="1.0" encoding="utf-8" ?>
+  <productfeed site="{{ shop.url }}" date-generated="{{ "now" | date: "%Y-%m-%d" }}T{{ "now" | date: "%H:%M:S" }}+00:00">
+    <categories>{% for c in collections %}
+        <category id="category_{{ c.id }}">
+            <id>{{ c.id }}</id>
+            <name><![CDATA[{{ c.title }}]]></name>
+            <breadcrumb><![CDATA[{{ c.handle }}]]></breadcrumb>
+            <link>https://vapehq.co.uk{{ c.url }}</link>
+        </category>{% endfor %}
+    </categories>
+    <products>{% for c in collections %}{% for product in c.products %}
+        <product id="product_{{ product.handle }}">
+            <id>{{ product.id }}</id>
+            <title><![CDATA[{{ product.title }}]]></title>
+            <description><![CDATA[{{ product.description | strip_html | strip_newlines }}]]></description>
+            <price currency="GBP">{{ product.price | money_without_currency | times: 1.2 }}</price>
+            <sale_price currency="GBP">{{ product.price | money_without_currency | times: 1.2 }}</sale_price>
+            <link><![CDATA[https://vapehq.co.uk{{ product.url }}]]></link>
+            <image><![CDATA[https://vapehq.co.uk/cdn/shop/{{ product.images[0].src }}]]></image>
+            <stock>{% assign stockLevel = 0 %}{% for variant in product.variants %}{% assign stockLevel = stockLevel | plus: variant.inventory_quantity %}{% endfor %}{{ stockLevel }}</stock>
+            <skus>{% for variant in product.variants %}
+                <sku>{{ variant.sku | url_encode }}</sku>
+{% endfor %}            </skus>
+            <variants>{% for variant in product.variants %}
+                <variant>
+                    <id>{{ variant.id }}</id>
+                    <link><![CDATA[https://vapehq.co.uk{{ variant.url }}]]></link>
+                    <image><![CDATA[https://vapehq.co.uk/cdn/shop/{{ product.images[0].src }}]]></image>
+                    <price>{{ variant.price | money_without_currency | times: 1.2 }}</price>
+                    <sale_price>{{ variant.price | money_without_currency | times: 1.2 }}</sale_price>
+                    <skus>
+                        <sku>{{ variant.sku | url_encode }}</sku>
+                    </skus>
+                  <stock>{{ variant.inventory_quantity }}</stock>
+                    <attributes> 
+                    </attributes>
+                </variant>{% endfor %}
+            </variants>
+        </product>{% endfor %}{% endfor %}
+    </products>
+</productfeed>

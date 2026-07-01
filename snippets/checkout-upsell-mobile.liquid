@@ -1,0 +1,45 @@
+{% assign pure = 0 %}
+{% assign qsalt = 0 %}
+{% for item in cart.items %}
+  {% assign splitSKU = item.sku | downcase | split: "-" %}
+  {% if splitSKU contains "pure" %}
+    {% assign pure = pure | plus: item.quantity %}
+  {% endif %}
+  {% if splitSKU contains "qsalt" %}
+    {% assign pure = qsalt | plus: item.quantity %}
+  {% endif %}
+{% endfor %}
+<style>
+  @media only screen and (max-width: 860px) {
+    .desktopUpsell {
+      display: none;
+    }
+    .mobileUpsell {
+      display: block;
+    }
+    .mobileUpsell img {
+      width: 100%;
+    }
+  }
+  @media only screen and (min-width: 861px) {
+    .desktopUpsell {
+      display: block;
+    }
+    .mobileUpsell {
+      display: none;
+    }
+    .mobileUpsell img {
+      width: 100%;
+    }
+  }
+</style>
+{% if pure >= 3 and pure < 10 %}
+  <div class="mobileUpsell" style="background-color:#f2f2f2; color:#545454; text-align:center; margin:10px 5px 20px 5px; padding:10px">
+    <img src="{{ '600x400.png' | asset_img_url: '206x' }}">
+  </div>
+{% endif %}
+{% if qsalt >= 3 and qsalt < 10 %}
+  <div class="mobileUpsell" style="background-color:#f2f2f2; color:#545454; text-align:center; margin:10px 5px 20px 5px; padding:10px">
+    <img src="{{ 'qsalt-reminder.jpg' | asset_img_url: '206x' }}">
+  </div>
+{% endif %}

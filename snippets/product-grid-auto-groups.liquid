@@ -1,0 +1,104 @@
+{% comment %}
+  Auto-grouped collection filters (VapeHQ).
+
+  The store uses plain Shopify tags (Fruit, Menthol, 10ML, Nicotine Salt,
+  brand names, ...) rather than the "GROUP_value" convention Empire's
+  built-in grouped filters expect. This snippet buckets the collection's
+  REAL tags + vendors into Flavour / Bottle size / Strength / Brand groups
+  by keyword, so no retagging is required. Each group is rendered with the
+  theme's standard sidebar markup so styling + accordion behaviour carry over.
+
+  Price is rendered only when native Shopify storefront filtering is enabled
+  (collection.filters present), since the legacy theme has no tag for price.
+
+  @param tag_limit {Number} items shown per group before "see more"
+{% endcomment %}
+
+{%- liquid
+  assign limit = tag_limit | times: 1
+  if limit <= 0
+    assign limit = 8
+  endif
+
+  # Keyword sets are comma-wrapped so membership can be tested with
+  # "set contains ',handle,'" without partial matches.
+  assign flavour_set = ',fruit,fruits,fruity,menthol,ice,iced,ice-menthol,menthol-ice,dessert,desserts,drinks,drink,beverage,beverages,sweets,sweet,candy,tobacco,other,bakery,custard,mint,cereal,coffee,nuts,sour,cola,energy,'
+  assign size_set = ',10ml,15ml,20ml,30ml,40ml,50ml,60ml,80ml,100ml,120ml,150ml,200ml,shortfill,shortfills,short-fill,nic-salt,nic-salts,nicotine-salt,nicotine-salts,salt-nicotine,salt-nic,nicotine-shot,nic-shot,nicshot,disposable,disposables,prefilledpod,prefilled-pod,pod,pods,'
+
+  assign flavour_tags = ''
+  assign size_tags = ''
+  assign strength_tags = ''
+
+  for tag in collection.all_tags
+    assign h = tag | handle
+    assign needle = ',' | append: h | append: ','
+    assign last2 = h | slice: -2, 2
+
+    if flavour_set contains needle
+      assign flavour_tags = flavour_tags | append: '~~' | append: tag
+    elsif size_set contains needle
+      assign size_tags = size_tags | append: '~~' | append: tag
+    elsif last2 == 'mg'
+      assign strength_tags = strength_tags | append: '~~' | append: tag
+    elsif h == 'nicotine-free' or h == '0-nicotine' or h == 'no-nicotine'
+      assign strength_tags = strength_tags | append: '~~' | append: tag
+    endif
+  endfor
+
+  assign flavour_tags = flavour_tags | remove_first: '~~' | split: '~~'
+  assign size_tags = size_tags | remove_first: '~~' | split: '~~'
+  assign strength_tags = strength_tags | remove_first: '~~' | split: '~~'
+
+  # Brand: only vendors that also exist as a tag can be filtered via tag links
+  assign brand_tags = ''
+  for v in collection.all_vendors
+    if collection.all_tags contains v
+      assign brand_tags = brand_tags | append: '~~' | append: v
+    endif
+  endfor
+  assign brand_tags = brand_tags | remove_first: '~~' | split: '~~'
+-%}
+
+{% render 'product-grid-auto-group', label: 'Flavour', group_tags: flavour_tags, limit: limit %}
+{% render 'product-grid-auto-group', label: 'Bottle size', group_tags: size_tags, limit: limit %}
+{% render 'product-grid-auto-group', label: 'Strength', group_tags: strength_tags, limit: limit %}
+{% render 'product-grid-auto-group', label: 'Brand', group_tags: brand_tags, limit: limit %}
+
+{%- comment -%}
+  Price — only when the store has native storefront filtering switched on
+  (free Search & Discovery app). Otherwise the links would silently no-op,
+  so we hide the group entirely rather than show something that looks broken.
+{%- endcomment -%}
+{%- if collection.filters.size > 0 -%}
+  {%- assign base_url = collection.url -%}
+  {%- assign price_ranges = '0-5,5-10,10-15,15-20,20-' | split: ',' -%}
+  <div class="productgrid--sidebar-group" data-productgrid-sidebar-group>
+    <button class="productgrid--sidebar-button" data-filter-group-trigger aria-expanded="false">
+      <h3 class="productgrid--sidebar-title--small">Price</h3>
+      <div class="productgrid--sidebar-icon-wrapper" tabindex="-1">
+        <span class="productgrid--sidebar-icon">{% render 'icon-chevron-down-small' %}</span>
+      </div>
+    </button>
+    <ul class="productgrid--sidebar-item filter-group" data-filter-group="Price" aria-expanded="false" data-accordion-content>
+      <div class="filter-group--wrapper">
+        {%- for range in price_ranges -%}
+          {%- assign bounds = range | split: '-' -%}
+          {%- assign lo = bounds[0] | default: '' -%}
+          {%- assign hi = bounds[1] | default: '' -%}
+          {%- capture price_url -%}{{ base_url }}?{% if lo != '0' and lo != '' %}filter.v.price.gte={{ lo }}&{% endif %}{% if hi != '' %}filter.v.price.lte={{ hi }}{% endif %}{%- endcapture -%}
+          {%- capture price_label -%}
+            {%- if lo == '0' -%}Under £{{ hi }}
+            {%- elsif hi == '' -%}£{{ lo }}+
+            {%- else -%}£{{ lo }} – £{{ hi }}{%- endif -%}
+          {%- endcapture -%}
+          <li class="filter-item" data-handle="price-{{ range | handle }}">
+            <a class="filter-link" href="{{ price_url | strip }}">
+              <span class="filter-icon--checkbox">{%- render 'icon-checkmark-animated', animation_state: 'unchecked' -%}</span>
+              <span class="filter-text">{{ price_label | strip }}</span>
+            </a>
+          </li>
+        {%- endfor -%}
+      </div>
+    </ul>
+  </div>
+{%- endif -%}

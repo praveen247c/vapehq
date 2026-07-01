@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+  <productfeed site="https://vapehq.co.uk{{ page.url }}" date-generated="{{ date }}">
+{% for c in collections %}
+    <categories>
+        <category id="category_4">
+            <id>4</id>
+            <name><![CDATA[Women]]></name>
+            <breadcrumb><![CDATA[Women]]></breadcrumb>
+            <link>https://vapehq.co.uk{{ c.url }}</link>
+        </category>
+    </categories>
+  {% endfor %}
+    <products>
+  {% for c in collections %}
+  {% for product in c.products %}
+    
+        <product id="{{ product.handle }}">
+            <id>{{ product.id }}</id>
+            <title><![CDATA[{{ product.title }}]]></title>
+            <description><![CDATA[{{ product.description }}]]></description>
+            <price currency="GBP">{{ product.price | money | times: 1.2 }}</price>
+          <link><![CDATA[https://vapehq.co.uk{{ product.url }}]]></link>
+            <image><![CDATA[{{ product.image[0] }}]]></image>
+    <skus>
+      {% for variant in product.variants %}
+                <sku>{{ variant.sku | replace: "&", "" }}</sku>
+        {% endfor %}
+            </skus>
+          
+            <variants>
+              {% for variant in product.variants %}
+                <variant>
+                    <id>{{ variant.id }}</id>
+                    <colour><![CDATA[Black]]></colour>
+                    <mpn><![CDATA[ace002]]></mpn>
+                    <stock>{{ product.available }}</stock>
+                    <size><![CDATA[ 6/8/10 ]]></size>
+                    <age_group><![CDATA[ adult ]]></age_group>
+                    <link><![CDATA[https://vapehq.co.uk{{ variant.url }}]]></link>
+                    <image><![CDATA{{ variant.image }}]]></image>
+                    <skus>
+                        <sku>123</sku>
+                        <sku>456</sku>
+                    </skus>
+                    <attributes>
+                       <example_1>mild</example_1> 
+                       <example_2>medium</example_2> 
+                    </attributes>
+                </variant>
+                {% endfor %}
+            </variants>
+        </product>
+  {% endfor %}
+{% endfor %}
+</products>
+</productfeed>

@@ -1,0 +1,106 @@
+<div style="background-color:#f5f5f5; max-width:1400px; color:#000; padding:10px; margin:auto; text-align:center;">
+  <style>
+    .scrolling-wrapper {
+      overflow-x: scroll;
+      overflow-y: hidden;
+      white-space: nowrap;
+    }
+    .scrolling-wrapper::-webkit-scrollbar {
+      display: none;
+    }
+    .scrolling-wrapper {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+    .navblockcontent {
+      display: inline-block;
+      margin: 7px;
+      width: 130px;
+      height: 130px;
+      color: white;
+      padding: 5px;
+      text-align: center;
+      line-height: 130px;
+      font-weight: bold;
+      font-size: 18px;
+    }
+  </style>
+
+  <div align="center">
+    <i class="fa fa-chevron-right" style="float:right; margin-left:5px; line-height:2.6; color:#0b76e0;"></i>
+    <i class="fa fa-chevron-left" style="float:left; margin-right:5px; line-height:2.6; color:#0b76e0;"></i>
+    
+    <div class="scrolling-wrapper">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'nav_item' -%}
+          <a href="{{ block.settings.link }}">
+            <span class="button-primary" style="--pxu-lia-inner-sequence:2; animation-play-state: running;">
+              {{ block.settings.label }}
+            </span>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Scrollable Navigation",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "visible_on_mobile",
+      "label": "Display on Mobile",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "nav_item",
+      "name": "Navigation Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Button Label"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scrollable Navigation",
+      "category": "Custom",
+      "blocks": [
+        {
+          "type": "nav_item",
+          "settings": {
+            "label": "MULTIBUYS",
+            "link": "/pages/offers"
+          }
+        },
+        {
+          "type": "nav_item",
+          "settings": {
+            "label": "E-LIQUID",
+            "link": "/collections/all-e-liquid"
+          }
+        },
+        {
+          "type": "nav_item",
+          "settings": {
+            "label": "DISPOSABLES",
+            "link": "/collections/disposables"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,111 @@
+<style>
+#prompt-background {
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 9999999;
+  background: rgba(0, 0, 0, 0.5);
+}
+.modal-prompt select {
+  float: left;
+  margin-right: 10px;
+}
+.modal-prompt {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+  height: auto;
+  max-width: 375px;
+  margin: 0 auto;
+  padding: 20px 35px 30px 35px;
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%);
+  z-index: 1000000;
+}
+.age-button {
+display:inline-block;
+color:#0b76e0;
+font-size:20px;
+font-weight:bold;
+padding:10px;
+border:2px solid #0b76e0;
+background-color:#fff;
+box-shadow: none;
+border-radius: 5px
+}
+.age-check {
+display:none;
+}
+</style>
+
+<div id="age-check" class="age-check">
+<div id="prompt-background">
+  <div id="age-check-prompt" class="modal-prompt" style="text-align:center;">
+
+    <div>
+      <img src="https://cdn.shopify.com/s/files/1/2600/2254/files/vapehq-site-logo_256x49.png?v=1661861345" alt="Collection Image" style="width: 150px;">
+    </div>
+
+
+        <p><img src="https://cdn.shopify.com/s/files/1/2600/2254/files/18-icon.png?v=1673969853" width="100px";></p>
+
+    <p>
+      <strong>WE AGE VERIFY WITH</strong><br>
+      <img src="https://cdn.shopify.com/s/files/1/2600/2254/files/1account-logo.png?v=1706484551" alt="Collection Image" style="width: 250px;">
+    </p>
+
+    <p>By purchasing from vapehq.co.uk, you certify that you are above 18 years of age and agree to be age verified upon purchase.</p>
+    <button id="submit_birthdate" onclick="ageCheck()" class="age-button">YES</button>
+    <span style="padding: 0 4px"></span>
+    <button id="button-exit" onclick="location.href='http://google.com';" class="age-button">NO</button>
+  </div>
+</div>
+</div>
+
+<script>
+function initialSetup() {
+  if (document.getElementById("age-check") != null) {
+    setTimeout(function() {
+      document.getElementById('age-check').style.display = 'block';
+    }, 3000);
+  }
+}
+
+initialSetup();
+</script>
+
+<script>
+function ageCheck() {
+     var days = 14; //number of days until they must go through the age checker again.
+     var date = new Date();
+     date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+     var expires = "; expires=" + date.toGMTString();
+     document.cookie = 'isAnAdult=true;' + expires + "; path=/";
+     location.reload();
+ };
+
+ function readCookie(name) {
+   var nameEQ = name + "=";
+   var ca = document.cookie.split(';');
+   for (var i = 0; i < ca.length; i++) {
+     var c = ca[i];
+     while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+     if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+   }
+   return null;
+ };
+
+ var isAnAdult = readCookie('isAnAdult');
+ if (isAnAdult) {
+ 	var elem = document.getElementById("prompt-background");
+  elem.parentNode.removeChild(elem);
+ };
+</script>

@@ -1,0 +1,64 @@
+<div style="margin-top:40px">{% render 'popular-brands' %}</div>
+
+{% schema %}
+  {
+    "name": "Popular Brands",
+	"class": "index-section section-wrapper",
+	"max_blocks": 12,
+    "settings": [
+	  {
+        "type": "checkbox",
+        "id": "placement_fullwidth",
+        "label": "Force Full Width"
+      },
+      {
+        "type": "checkbox",
+        "id": "visible_on_mobile",
+        "label": "Display on Mobile"
+      }
+	],
+	"blocks": [
+      {
+		"type": "custom_html",
+        "name": "Custom HTML",
+        "settings": [
+          {
+			"type": "textarea",
+            "id": "html_content",
+            "label": "HTML Content",
+            "info": "[How to use?](https:\/\/youtu.be\/s7s8hWXVxGE)"
+		  }
+		]	
+      },
+	  {
+		"type": "content_page",
+        "name": "Page Content",
+        "settings": [
+          {
+            "type": "page",
+            "id": "page_content",
+            "label": "Choose a Page"
+          }
+		]	
+      }
+	],
+    "presets": [
+      {
+        "name": "Popular Brands",
+        "category": "Content",
+        "settings": {
+		  "placement_fullwidth": true,
+          "visible_on_mobile": true
+        },
+        "blocks": [
+          {
+            "type": "custom_html",
+			"settings": {
+				"html_content": "<div style='text-align: center;'><h1>This is sample HTML</h1></div>"
+			}
+          }
+        ]
+      }
+    ]
+  }
+{% endschema %}

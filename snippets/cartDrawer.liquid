@@ -1,0 +1,131 @@
+{% assign cartTotal = cart.total_price  | times: 1.2 %}
+{% capture day %}{{ "now" | date: "%a" }}{% endcapture %}
+{% capture hour %}{{ "now" | date: "%H" }}{% endcapture %}
+{% assign hour = hour | plus: 0 %}
+{% assign weekdayDelivery = 1999 %}
+{% assign weekendDelivery = 4000 %}
+{% if hour >= 16 %}
+  {% assign timeofday = "after" %}
+{% else %}
+  {% assign timeofday = "before" %}
+{% endif %}
+{% if cartTotal >= weekendDelivery %}
+  {% assign delivery = "weekend" %}
+{% else %}
+  {% if cartTotal < weekendDelivery and cartTotal >= weekdayDelivery %}
+    {% assign delivery = "weekday" %}
+  {% endif %}
+{% endif %}
+{% case day %}
+  {% when "Thur" %}
+    {% if timeofday == "before" %}
+      {% assign deliveryAmount = weekdayDelivery %}
+    {% else %}
+      {% assign deliveryAmount = weekendDelivery %}
+    {% endif %}
+{% when "Fri" %}
+  {% assign deliveryAmount = weekendDelivery %}
+{% when "Sat" %}
+{% else %}
+{% assign deliveryAmount = weekdayDelivery %}
+{% endcase %}
+{% assign javaScriptAmount = deliveryAmount | money_without_currency %}
+
+<div style="/*display: none;*/" class="atc-banner--container" role="log" data-atc-banner>
+  <div class="atc-banner--outer">
+    <div id="deliveryPromoBanner" align="center" style="">
+      <div id="amountRemainingNewOuter">
+        {% if cartTotal < deliveryAmount %}
+         You are <span id="amountRemainingNew" class="orderbybanneralt" style="font-weight:bold; ">{{ deliveryAmount | minus: cartTotal | money }}</span> away from FREE Next Day Shipping.
+        {% else %}
+          You qualify for FREE Next Day Shipping.
+        {% endif %}
+      </div>
+      <div id="deliveryProgressOuter" style="">
+        <div id="deliveryProgressNew" style=""></div>
+        <div class="deliveryStops" style="left: 0px; background-color: #0b76e0;"></div>
+        {% if deliveryAmount == weekendDelivery %}<div class="deliveryStops" style="right: 50%; background-color: #C0C0C0;"></div>{% endif %}
+        <div class="deliveryStops" style="right: 0px; background-color: #fcc200;"></div>
+      </div>
+      <span style="float: left;">£4.99 DPD Delivery</span>
+      {% if deliveryAmount == weekendDelivery %}<span style="float: left; margin-left: calc(50% - 115px);">FREE DPD Next Working Day Delivery</span>{% endif %}
+      <span style="float: right;">FREE DPD Next Day Delivery (before {% if deliveryAmount == weekendDelivery %}1{% else %}4{% endif %}pm)</span>
+      {% assign javaScriptAmount = deliveryAmount | money_without_currency %}
+    </div>
+    <div class="atc-banner--inner">
+      <div class="atc-banner--product">
+        <h2 class="atc-banner--product-title">
+          <span class="atc-banner--product-title--icon">
+            {%- render 'icon-checkmark' -%}
+          </span>
+          {{ 'add_to_cart_banner.general.product_added' | t }}
+        </h2>
+
+        <div class="atc--product">
+          <div class="atc--product-image" data-atc-banner-product-image>
+            <img id="checkoutSwatchMain">
+            {% for blah in (1..product.metafields.bundle_options.no_of_freebies) %}
+            <img id="checkoutSwatch{{ blah }}">
+            {% endfor %}
+          </div>
+          <!--<div class="atc--product-details">
+            <h2 class="atc--product-details--title" data-atc-banner-product-title></h2>
+            <span class="atc--product-details--options" data-atc-banner-product-options></span>
+            <span class="atc--product-details--price">
+              <span class="atc--product-details--price-quantity" data-atc-banner-product-price-quantity></span>
+              <span class="atc--product-details--price-value money" data-atc-banner-product-price-value></span>
+              <span class="atc--product-details--price-discounted money" data-atc-banner-product-price-discounted></span>
+              <span class="atc--product-details--unit-price hidden" data-atc-banner-unit-price>
+                {{ 'product_price.price.price_per_unit_html' | t: total_quantity: '** total_quantity **', unit_price: '** unit_price **', unit_measure: '** unit_measure **' }}
+              </span>
+            </span>
+            <ul class="discount-list" data-atc-banner-product-discounts>
+              <li class="discount-list-item">
+                {% render 'icon-library', id: 'icon-sale-tag' %}
+                <span class="discount-title"></span>
+                (-<span class="money discount-amount"></span>)
+              </li>
+            </ul>
+          </div>-->
+        </div>
+      </div>
+
+      <div class="atc-banner--cart">
+        <div class="atc-banner--cart-subtotal">
+          <span class="atc-subtotal--label">
+            {{ 'add_to_cart_banner.general.sub_total' | t }}
+          </span>
+          <span class="atc-subtotal--price money" data-atc-banner-cart-subtotal></span>
+        </div>
+
+        <footer class="atc-banner--cart-footer">
+          <a class="button-secondary atc-button--viewcart" href="{{ routes.cart_url }}" data-atc-banner-cart-button>
+            {{ 'add_to_cart_banner.general.view_cart_html' | t: count: '<span id="cartDrawerCount"></span>' }}
+          </a>
+          <form
+            action="{{ routes.cart_url }}"
+            method="post"
+            aria-label="cart checkout"
+          >
+            <input type="hidden" name="attributes[cart-time]" id="cart-time" value="">
+            <button class="button-primary atc-button--checkout" type="submit" name="checkout" onclick="var options = {weekday: 'long', hour: 'numeric', minute: 'numeric'}; let now = new Date().toLocaleDateString('en-GB', options); $('#cart-time').val(now);console.log($('#cart-time').val());">
+              {% if settings.enable_checkout_lock_icon %}
+                {% render 'icon-checkout-lock' %}
+              {% endif %}
+              <span>{{ 'add_to_cart_banner.general.checkout' | t }}</span>
+            </button>
+          </form>
+        </footer>
+      </div>
+    </div>
+
+    <button
+      class="atc-banner--close"
+      type="button"
+      aria-label="{{ 'general.accessibility.close' | t }}"
+      data-atc-banner-close
+    >
+      {%- render 'icon-menu-close' -%}
+    </button>
+  </div>
+</div>

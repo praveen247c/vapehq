@@ -1,0 +1,451 @@
+<style>
+  #offerAdderHolder {
+    display: none;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 775;
+    backdrop-filter: blur(2px);
+  }
+  #startOver {
+    display: none;
+    /*margin: unset;
+    border: none;
+    background: none;*/
+    cursor: pointer;
+  }
+  #rangeSelect {
+    display: none;
+    font-size: small;
+    text-align: center;
+  }
+  #offerAdder {
+    max-width: 400px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background-color: white;
+    padding: 20px;
+    padding-top: 0px;
+    border: black 1px solid;
+  }
+  #offersFlavour {
+    margin-top: 15px;
+  }
+  #offerAdder button {
+    max-width: 335px;
+    margin-top: 15px;
+    width: 100%;
+    /*margin-left: auto;
+    margin-right: auto;*/
+  }
+  #offersChoice1, #offersChoice2, #offersChoice3 {
+    height: 20px;
+    margin-top: 5px;
+    margin-left: 5px;
+    width: 100%;
+    display: none;
+  }
+  #offersChoice1 button, #offersChoice2 button, #offersChoice3 button {
+    float: right;
+    width: auto;
+    margin: unset;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  #offersSelectorGroup1 select , #offersSelectorGroup2 select, #offersSelectorGroup3 select {
+    max-width: 375px;
+  }
+  #offersFlavour1, #offersFlavour2, #offersFlavour3, #offersStength1, #offersStength2, #offersStength3 {
+    margin-bottom: 5px;
+  }
+  @media only screen and (max-width: 400px) {
+    #offerAdder {
+      width: 100vw;
+    }
+  }
+  @media only screen and (min-width: 401px) and (max-width: 500px) {
+    #offerAdder {
+      width: 90vw;
+    }
+  }
+</style>
+<script>
+  var offers = {},        
+      offerRange="";      
+  function showOffer() {
+    var form = document.getElementById('product_form_{{ product.id }}');
+    if (form.id.value != ""){
+      $.ajax({
+        url: "//vapehq.sohamcomputerservices.co.uk/RetailVariantIDs.php?minQty=3",
+        type: 'get',
+        success: function(response) {
+          console.log(response);
+          offers = response;
+        }, 
+        error: function(XMLHttpRequest){
+          console.log('didnt work');
+          console.log(XMLHttpRequest);
+        }
+      });
+      $('#offerAdderHolder').css('display', 'block');
+    }
+  }
+        
+  function loadFlavours(selectorNumber, range) {
+    offerRange = range;
+    switch (range) {
+      case "pure":
+        $('#rangeSelect').html($('#offerAddPure').html());
+        break;
+      default:
+        $('#rangeSelect').html($('#offerAddQsalt').html());
+        break;
+    }
+    ['offerAddQsalt', 'offerAddPure'].forEach(key => {
+      $('#' + key).css('display', 'none');
+    });
+    ['startOver', 'rangeSelect'].forEach(key => {
+      $('#' + key).css('display', 'block');
+    });
+    
+    var select = document.getElementById('offersFlavour' + selectorNumber);
+    select.innerHTML = "";
+    var option = document.createElement('option');
+    option.innerHTML = "{{ section.settings.flavorDropdown }}";
+    select.appendChild(option);
+    Object.keys(offers[range]).forEach(key => {
+      if (key != document.getElementById('offersFlavour1').value && key != document.getElementById('offersFlavour2').value){
+        var option = document.createElement('option');
+        option.setAttribute('value', key);
+        if (offerRange == "pure") {option.innerHTML = "Pure - " + key;}
+        else {option.innerHTML = key;}
+        select.appendChild(option);
+      }
+    });
+    $('#offersSelectorGroup' + selectorNumber).css('display', 'block');
+  }
+        
+  function loadStrength(selectorNumber, range, flavour) {
+    var select = document.getElementById('offersStength' + selectorNumber);
+    select.innerHTML = "";
+    var option = document.createElement('option');
+    option.innerHTML = "{{ section.settings.strengthDropdown }}";
+    select.appendChild(option);
+    Object.keys(offers[range][flavour]).forEach(key => {
+      var option = document.createElement('option');
+      option.setAttribute('value', offers[range][flavour][key]);
+      option.innerHTML = key;
+      select.appendChild(option);
+    });
+    $(select).css("display", "block");
+  }
+
+  function reShowSelector(Selector) {
+    if ($('#offersFlavour' + Selector).css('display') == 'block') {var state = 'none'} else {var state = 'block'}
+    ['offersFlavour', 'offersStength', 'offersQty'].forEach(key=> {
+      $('#' + key + Selector).css('display', state);
+    });
+    $("#offersSelectorGroup" + Selector + " h3").css('display', state);
+    if (state == 'block') {
+      $('#offersChoice' + Selector + ' button').html('<i class="fa-solid fa-chevron-up"></i>');
+    }
+    else {
+      $('#offersChoice' + Selector + ' button').html('<i class="fa-solid fa-chevron-down"></i>');
+    }
+  }
+
+  function startOver() {
+    [1, 2, 3].forEach(Selector=> {
+      ['offersFlavour', 'offersStength', 'offersQty', 'offersSelectorGroup', 'offersChoice'].forEach(key=> {
+        if (key != "offersChoice" && key != "offersSelectorGroup") {
+          $('#' + key + Selector).val("");
+        }
+        if (key != "offersFlavour") {
+          $('#' + key + Selector).css('display', 'none');
+        }
+      });
+      $('#offersChoice' + Selector).html("");
+      $('#offersFlavour' + Selector).css('display', 'block');
+    });
+    ['offerAddQsalt', 'offerAddPure'].forEach(key => {
+      $('#' + key).css('display', 'block');
+    });
+    ['startOver', 'rangeSelect', 'offersAddToCart'].forEach(key => {
+      $('#' + key).css('display', 'none');
+    });
+  }
+  
+  function moreSelectorsOrButton(Selector) {
+    $('#offersChoice' + Selector).html($("#offersSelectorGroup" + Selector + " h3").html() + " - " + $("#offersFlavour" + Selector + " option:selected").html() + " - " + $("#offersStength" + Selector + " option:selected").html() + " x " + $("#offersQty" + Selector + " option:selected").html() + '<button onclick="reShowSelector(' + Selector + ')"><i class="fa-solid fa-chevron-down"></i></button>');
+    $('#offersChoice' + Selector).css('display', 'block');
+    ['offersFlavour', 'offersStength', 'offersQty'].forEach(key=> {
+      $('#' + key + Selector).css('display', 'none');
+    });
+    $("#offersSelectorGroup" + Selector + " h3").css('display', 'none');
+    var temp = 0;
+    ['offersQty3', 'offersQty2', 'offersQty1'].forEach(key=> {
+      if (document.getElementById(key).value != "") {
+        temp += parseInt(document.getElementById(key).value);
+      }
+    });
+    Qty = parseInt(temp);
+    switch(Qty) {
+      case 1:
+      case 2:
+        if($('#offersSelectorGroup2').css('display') == "block" && $('#offersFlavour2').val() != "") {
+          var select = document.getElementById('offersQty3');
+        } else {
+          var select = document.getElementById('offersQty2');
+        }
+        select.innerHTML = "";
+        var option = document.createElement('option');
+        option.innerHTML = "{{ section.settings.quantityDropdown }}";
+        select.appendChild(option);
+        for (i = 1; i < (4 - Qty); i++) {
+          var option = document.createElement('option');
+          option.setAttribute('value', i);
+          option.innerHTML = i;
+          select.appendChild(option);
+        };
+        if($('#offersSelectorGroup2').css('display') == "block") {
+          loadFlavours(3, offerRange);
+        } else {
+          loadFlavours(2, offerRange);
+        }
+        $('#offersAddToCart').css('display', 'none');
+        break;
+      case 3:
+        $('#offersAddToCart').css('display', 'block');
+        break;
+      default:
+        if(document.getElementById('offersFlavour3').value == "" || parseInt(document.getElementById('offersQty1').value) + parseInt(document.getElementById('offersQty2').value) >= 3) {
+          console.log('Too many, need to reduce, removing 3');
+          $('#offersSelectorGroup3').css('display', 'none');
+          if(document.getElementById('offersFlavour3').value != "") {
+            ['#offersFlavour3', '#offersStength3', '#offersQty3'].forEach(key=> {
+              $(key).val("");
+              if (key != "#offersFlavour3") {$(key).css('display', 'none');}
+            });
+          }
+        }
+        if(document.getElementById('offersFlavour2').value == "" || document.getElementById('offersQty1').value == 3) {
+          console.log('Too many, need to reduce, removing 2');
+          $('#offersSelectorGroup2').css('display', 'none');
+          if(document.getElementById('offersFlavour2').value != "") {
+            ['#offersFlavour2', '#offersStength2', '#offersQty2'].forEach(key=> {
+              $(key).val("");
+              if (key != "#offersFlavour2") {$(key).css('display', 'none');}
+            });
+          }
+        }
+        if(document.getElementById('offersFlavour3').value == "" || parseInt(document.getElementById('offersQty1').value) + parseInt(document.getElementById('offersQty2').value) >= 3) {
+          console.log('Still too many here, reducing 2 to make it work.');
+          $('#offersQty2').val((3 - parseInt(document.getElementById('offersQty1').value)));
+        }
+        break;
+    }
+  }
+  function processSelections() {
+    order = [];
+    for (i = 1; i < 4; i++) {
+      if (document.getElementById('offersQty' + i).value != ""){
+        order.push({"id": document.getElementById('offersStength' + i).value, "quantity": document.getElementById('offersQty' + i).value});
+      }
+    }
+    onTheFlyAddToCart(order);
+  }
+  async function onTheFlyAddToCart(order) {
+    const result = await fetch("/cart/add.json", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        items: order
+      })
+    })
+    console.log(result);
+    switch (result.status){
+      case 200:
+        alert("{{ section.settings.confMessage }}");
+        $('#offerAdderHolder').css('display', 'none');
+        var temp = document.getElementsByClassName("site-header-cart--count");
+              var temp2 = temp[0].getAttribute('data-header-cart-count');
+              temp[0].setAttribute('data-header-cart-count', parseInt(temp2) + 3);
+        break;
+      case 400:
+        alert('Looks like Chris broke something!');
+        $('#offerAdderHolder').css('display', 'none');
+        break;
+      case 404:
+        alert("{{ section.settings.errorMessage }}");
+        break;
+    }
+  }
+</script> 
+    <div id="offerAdderHolder">
+      <div id="offerAdder">
+        <h2>{{ section.settings.headerText }}</h2>
+        <h3 id="rangeSelect"></h3><button id="startOver" onclick="startOver()" class="product-form--atc-button">{{ section.settings.startOverButton }}</button>
+        <button id="offerAddQsalt" onclick="loadFlavours(1, 'qsalts');" class="product-form--atc-button">{{ section.settings.qsaltsButton }}</button>
+        <!--<button id="offerAddPure" onclick="loadFlavours(1, 'pure');" class="product-form--atc-button">{{ section.settings.pureButton }}</button>-->
+        <div id="offersSelectorGroup1" style="display: none;">
+          <h3>{{ section.settings.choiceOne }}</h3>
+          <div id="offersChoice1"></div>
+          <select id="offersFlavour1" class="form-field-input form-field-select form-field-filled" onchange="loadStrength(1,offerRange, this.value);"></select>
+          <select style="display: none;" id="offersStength1" class="form-field-input form-field-select form-field-filled" onchange="$('#offersQty1').css('display', 'block'); $('#offersQty').width($('#offerAdder button').width());"></select>
+          <select style="display: none;" id="offersQty1" class="form-field-input form-field-select form-field-filled" onchange="moreSelectorsOrButton(1);">
+            <option value="">{{ section.settings.quantityDropdown }}</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </div>
+        <div id="offersSelectorGroup2" style="display: none;">
+          <h3>{{ section.settings.choiceTwo }}</h3>
+          <div id="offersChoice2"></div>
+          <select id="offersFlavour2" class="form-field-input form-field-select form-field-filled" onchange="loadStrength(2,offerRange, this.value);"></select>
+          <select style="display: none;" id="offersStength2" class="form-field-input form-field-select form-field-filled" onchange="$('#offersQty2').css('display', 'block'); $('#offersQty').width($('#offerAdder button').width());"></select>
+          <select style="display: none;" id="offersQty2" class="form-field-input form-field-select form-field-filled" onchange="moreSelectorsOrButton(2);"></select>
+        </div>
+        <div id="offersSelectorGroup3" style="display: none;">
+          <h3>{{ section.settings.choiceThree }}</h3>
+          <div id="offersChoice3"></div>
+          <select  id="offersFlavour3" class="form-field-input form-field-select form-field-filled" onchange="loadStrength(3,offerRange, this.value);"></select>
+          <select style="display: none;" id="offersStength3" class="form-field-input form-field-select form-field-filled" onchange="$('#offersQty3').css('display', 'block'); $('#offersQty').width($('#offerAdder button').width());"></select>
+          <select style="display: none;" id="offersQty3" class="form-field-input form-field-select form-field-filled" onchange="moreSelectorsOrButton(3);"></select>
+        </div>
+        <button style="display: none;" onclick="processSelections();" id="offersAddToCart" class="product-form--atc-button">{{ section.settings.addButton }}</button>
+        <button style="background-color: {{ section.settings.noButtonColour }}" onclick="response = confirm('{{ section.settings.noQuestion }}'); if (response) {$('#offerAdderHolder').css('display', 'none');}" class="product-form--atc-button">{{ section.settings.noButton }}</button>
+      </div>
+    </div>
+{% schema %}
+  {
+    "name": "Q2-3x-offers",
+    "settings": [
+        {
+          "type": "header",
+          "content": "Dropdown/Button Text"
+        },
+        {
+          "type": "text",
+          "id": "headerText",
+          "label": "Header Text",
+          "default": "Save Money when you bundle"
+        },
+        {
+          "type": "text",
+          "id": "pureButton",
+          "label": "Pure Button Text",
+          "default": "Bundle this Device with 3x 10ml Pure for £15.98"
+        },
+        {
+          "type": "text",
+          "id": "qsaltsButton",
+          "label": "QSalts Button Text",
+          "default": "Bundle this Device with 3x 10ml QSalts for £25"
+        },
+        {
+          "type": "text",
+          "id": "startOverButton",
+          "label": "Start Over Button Text",
+          "default": "<i class='fa-solid fa-chevron-left'></i> Start Over"
+        },
+      	{
+          "type": "text",
+          "id": "addButton",
+          "label": "Add Button Text",
+          "default": "Add bundle to cart"
+        },
+        {
+          "type": "text",
+          "id": "noButton",
+          "label": "No Thanks Button Text",
+          "default": "No thanks, just the device"
+        },
+        {
+          "type": "color",
+          "id": "noButtonColour",
+          "label": "No Button Colour",
+          "default": "#990000"
+        },
+        {
+          "type": "text",
+          "id": "noQuestion",
+          "label": "No Thanks Are you Sure",
+          "default": "Are you sure?"
+        },
+        {
+          "type": "text",
+          "id": "flavorDropdown",
+          "label": "Flavor Dropdown Text",
+          "default": "Please Choose your flavour..."
+        },
+        {
+          "type": "text",
+          "id": "strengthDropdown",
+          "label": "Strength Dropdown Text",
+          "default": "Please Choose your Strength..."
+        },
+        {
+          "type": "text",
+          "id": "quantityDropdown",
+          "label": "Quantity Dropdown Text",
+          "default": "How Many..."
+        },
+        {
+          "type": "header",
+          "content": "Section Headers Text"
+        },
+        {
+          "type": "text",
+          "id": "choiceOne",
+          "label": "Section 1 Text",
+          "default": "Choice 1"
+        },
+        {
+          "type": "text",
+          "id": "choiceTwo",
+          "label": "Section 2 Text",
+          "default": "Choice 2"
+        },
+        {
+          "type": "text",
+          "id": "choiceThree",
+          "label": "Section 3 Text",
+          "default": "Choice 3"
+        },
+        {
+          "type": "header",
+          "content": "Message Text"
+        },
+        {
+          "type": "text",
+          "id": "confMessage",
+          "label": "Confirmation message Text",
+          "default": "Your bundle has been added to your basket."
+        },
+        {
+          "type": "text",
+          "id": "errorMessage",
+          "label": "Error Message",
+          "default": "Something wen't wrong adding you item to your basket, it's possible it's currently out of stock. Please try another."
+        }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  
+{% endstylesheet %}
+
+{% javascript %}
+  
+{% endjavascript %}

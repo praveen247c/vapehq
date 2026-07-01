@@ -1,0 +1,221 @@
+/* =====================================================================
+   VapeHQ — product page restyle to match the approved wireframe layout.
+   Brand colours (#0b76e0) and the theme's fonts are intentionally NOT
+   changed; only structure, spacing, borders, cards and component shapes.
+   ===================================================================== */
+
+.product--container {
+  --pdp-line: #d7dce3;
+  --pdp-line-2: #e8ebef;
+  --pdp-muted: #6b7280;
+  --pdp-accent: #0b76e0;
+  --pdp-radius: 14px;
+}
+
+/* ---- Two-column buy area ---- */
+@media screen and (min-width: 720px) {
+  .product--container .product--outer {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+  }
+  .product--container.layout--two-col .product-gallery { width: 50%; }
+  .product--container.layout--two-col .product-main {
+    width: 50%;
+    margin-left: 0;
+  }
+}
+
+/* ---- Gallery: clean rounded media ---- */
+.product--container .product-gallery img {
+  border-radius: var(--pdp-radius);
+}
+
+/* ---- Buy box header: brand -> title -> rating ---- */
+.product--container .product-vendor {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.product--container .product-title {
+  font-size: 26px;
+  line-height: 1.2;
+  margin: 2px 0 6px;
+}
+.product--container .product-ratings {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 4px 0 10px;
+}
+.product--container .product-ratings-link { font-weight: 600; }
+
+/* ---- Pricing ---- */
+.product--container .product-pricing { margin: 12px 0 2px; }
+
+/* ---- Section labels (option titles) like the wireframe ---- */
+.product--container .form-field-title,
+.product--container .variants-ui__option-name,
+.product--container .option-name,
+.product--container .selector-wrapper label {
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--pdp-muted);
+}
+
+/* ---- Variant options as segmented pills (when rendered as boxes) ---- */
+.product--container .variants-ui__option-values,
+.product--container .form-options-selectable-boxes .option-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.product--container .variants-ui__option-value,
+.product--container .form-options-selectable-boxes .option-value {
+  border: 1.5px solid var(--pdp-line);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.product--container .variants-ui__option-value--selected,
+.product--container .form-options-selectable-boxes .option-value--selected {
+  border-color: var(--pdp-accent);
+  background: rgba(11, 118, 224, 0.08);
+}
+.product--container .variants-ui__option-value-label,
+.product--container .form-options-selectable-boxes .option-value-label {
+  padding: 9px 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* ---- Add-to-cart + quantity row ---- */
+.product--container .product-form--atc {
+  margin-top: 16px;
+}
+.product--container .product-form--atc-button {
+  border-radius: 10px;
+}
+
+/* ---- Multibuy / deal buttons grouped neatly ---- */
+.product--container .productpageoffer {
+  border-radius: 10px;
+}
+
+/* =====================================================================
+   Lower content as stacked cards: Description, Specifications,
+   Reviews and Related products.
+   ===================================================================== */
+.product-description,
+.product-specs,
+.product-recommendations--container,
+#lipscore-review-list {
+  background: #fff;
+  border: 1px solid var(--pdp-line, #d7dce3);
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin-top: 22px;
+}
+
+.product-description > h2,
+.product-specs > h2,
+.product-recommendations--title {
+  font-size: 18px;
+  margin: 0 0 12px;
+}
+
+/* Specifications table rows */
+.product-specs table { width: 100%; border-collapse: collapse; }
+.product-specs th,
+.product-specs td {
+  text-align: left;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--pdp-line-2, #e8ebef);
+  font-weight: 400;
+}
+.product-specs th { color: var(--pdp-muted, #6b7280); width: 42%; }
+.product-specs tr:last-child th,
+.product-specs tr:last-child td { border-bottom: 0; }
+
+/* Keep the description readable width on very wide screens */
+@media screen and (min-width: 1024px) {
+  .product-description,
+  .product-specs {
+    max-width: 100%;
+  }
+}
+
+/* =====================================================================
+   Promo / offer banners (multibuy-banner + productpageoffer)
+   Scoped to the product page so collection-card banners are untouched.
+   Same brand blue, just a cleaner modern treatment.
+   ===================================================================== */
+.product--container .multibuy-banner,
+.product--container .productpageoffer {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  margin: 8px 0;
+  padding: 13px 16px;
+  max-height: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #0b76e0 0%, #0a5fb8 100%);
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1.35;
+  box-shadow: 0 2px 10px rgba(11, 118, 224, 0.22);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Offer blocks are usually wrapped in an anchor — remove the gap it adds */
+.product--container a {
+  text-decoration: none;
+}
+
+.product--container .multibuy-banner:hover,
+.product--container .productpageoffer:hover,
+.product--container a:hover .productpageoffer {
+  background: linear-gradient(135deg, #0a63be 0%, #084e96 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(11, 118, 224, 0.30);
+}
+
+/* Tame the oversized inline heading (was 25px) into a balanced title */
+.product--container .productpageoffer strong {
+  font-size: 17px !important;
+  letter-spacing: 0.3px;
+  display: inline-block;
+  margin-bottom: 2px;
+}
+
+/* Secondary descriptive line */
+.product--container .productpageoffer span,
+.product--container .multibuy-banner span {
+  font-size: 12.5px !important;
+  font-weight: 500;
+  opacity: 0.92;
+  display: inline-block;
+  margin-top: 2px;
+}
+
+/* Icons + inline links inside banners */
+.product--container .productpageoffer i,
+.product--container .multibuy-banner i {
+  opacity: 0.85;
+  margin-right: 5px;
+}
+.product--container .productpageoffer a,
+.product--container .multibuy-banner a {
+  color: #fff;
+  text-decoration: underline;
+}

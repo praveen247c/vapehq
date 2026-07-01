@@ -1,0 +1,50 @@
+{% comment %}
+  Reassurance row shown under the Add to cart button.
+  Structure mirrors the wireframe (2-col grid of trust signals); colours/styles
+  reuse the theme's existing accent and typography only.
+{% endcomment %}
+
+<div class="product-reassurance" data-product-reassurance>
+  <div class="product-reassurance__item">
+    <i class="fa-sharp fa-solid fa-truck-fast"></i>
+    <span><b>Free delivery</b> on orders over £19.99</span>
+  </div>
+  <div class="product-reassurance__item">
+    <i class="fa fa-clock-one"></i>
+    <span><b>Order by 16:00</b> for same-day dispatch</span>
+  </div>
+  <div class="product-reassurance__item">
+    <i class="fa-solid fa-rotate-left"></i>
+    <span><b>30-day returns</b> on unopened items</span>
+  </div>
+  <div class="product-reassurance__item">
+    <i class="fa-solid fa-lock"></i>
+    <span><b>Secure payment</b> — Visa, Mastercard, PayPal, Apple Pay</span>
+  </div>
+</div>
+
+<style>
+  .product-reassurance {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 18px;
+    margin-top: 18px;
+    padding-top: 16px;
+    border-top: 1px solid #e8ebef;
+    font-size: 13px;
+  }
+  @media screen and (max-width: 480px) {
+    .product-reassurance { grid-template-columns: 1fr; }
+  }
+  .product-reassurance__item {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    line-height: 1.4;
+  }
+  .product-reassurance__item i {
+    color: #0b76e0;
+    margin-top: 2px;
+    flex: 0 0 auto;
+  }
+</style>

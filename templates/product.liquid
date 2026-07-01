@@ -1,0 +1,96 @@
+{% section 'static-product' %}
+
+{% assign extended-images = product.metafields.custom.extended_description_images.value %}
+{% if extended-images %}
+  <div align="center">
+  <div style="max-width:1597px; padding:10px; margin:10px 2px 10px 2px;">
+ {% for extended_description_images in extended-images %}
+  <img src="{{ extended_description_images | image_url }}" width="100%">
+ {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{% comment %} Reviews are rendered first (below), then related products — matches the new structure {% endcomment %}
+
+{% if product %}
+  {% assign variant_sku_values = product.variants | map: 'sku' %}
+  {% assign sku_values = variant_sku_values | uniq | join: ';' %}
+  {% assign ls_selected_or_first_variant = product.selected_or_first_available_variant %}
+
+  {% if product.available %}
+    {% assign ls_availability = 1 %}
+  {% else %}
+    {% assign ls_availability = 0 %}
+  {% endif %}
+<style>
+  #lipscore-review-list, #lipscore-question-post, #lipscore-question-list {
+    max-width: 1350px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>
+  <div id="lipscore-review-list"
+    ls-product-name="{{ product.title }}"
+    ls-brand="{{ product.vendor }}"
+    ls-sku="{{ sku_values }}"
+    ls-product-id="{{ product.id }}"
+    ls-product-url="{{ shop.url }}{{ product.url }}"
+    ls-description="{{ product.description | escape }}"
+    ls-image-url="{{ product | img_url: '1024x1024' | remove: '_1024x1024' }}"
+    ls-price="{{ ls_selected_or_first_variant.price | money_without_currency }}"
+    ls-price-currency="{{ shop.currency }}"
+    ls-availability="{{ ls_availability }}"
+    ls-category="{{ product.type }}"></div>
+{% endif %}
+{% section 'static-product-recommendations' %}
+
+{% section 'static-recently-viewed' %}
+
+<div class="lipscore-full-widget">
+  <h3 style="max-width: 1400px;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 20px;
+    margin-right: auto;
+    margin-left: auto;">Questions & Answers</h3>
+ 
+  {% if product %}
+    {% assign variant_sku_values = product.variants | map: 'sku' %}
+    {% assign sku_values = variant_sku_values | uniq | join: ';' %}
+    {% assign ls_selected_or_first_variant = product.selected_or_first_available_variant %}
+    {% if product.available %}
+      {% assign ls_availability = 1 %}
+    {% else %}
+      {% assign ls_availability = 0 %}
+    {% endif %}
+    
+    <div id="lipscore-question-post"
+      ls-product-name="{{ product.title }}"
+      ls-brand="{{ product.vendor }}"
+      ls-sku="{{ sku_values }}"
+      ls-product-id="{{ product.id }}"
+      ls-product-url="{{ shop.url }}{{ product.url }}"
+      ls-description="{{ product.description | escape }}"
+      ls-image-url="{{ product | img_url: '1024x1024' | remove: '_1024x1024' }}"
+      ls-price="{{ ls_selected_or_first_variant.price | money_without_currency }}"
+      ls-price-currency="{{ shop.currency }}"
+      ls-availability="{{ ls_availability }}"
+      ls-category="{{ product.type }}">
+    </div>
+    <div id="lipscore-question-list"
+      ls-product-name="{{ product.title }}"
+      ls-brand="{{ product.vendor }}"
+      ls-sku="{{ sku_values }}"
+      ls-product-id="{{ product.id }}"
+      ls-product-url="{{ shop.url }}{{ product.url }}"
+      ls-description="{{ product.description | escape }}"
+      ls-image-url="{{ product | img_url: '1024x1024' | remove: '_1024x1024' }}"
+      ls-price="{{ ls_selected_or_first_variant.price | money_without_currency }}"
+      ls-price-currency="{{ shop.currency }}"
+      ls-availability="{{ ls_availability }}"
+      ls-category="{{ product.type }}"
+      ls-page-size="5">
+    </div> 
+  {% endif %}
+</div>

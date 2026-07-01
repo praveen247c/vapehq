@@ -1,0 +1,83 @@
+{% comment %}
+  Renders a single collapsible filter group in the collection sidebar.
+  Reuses the theme's existing group markup/classes so the accordion,
+  "see more" toggle and styling all work without extra JS.
+
+  @param label {String}        Group heading (e.g. "Flavour")
+  @param group_tags {Array}    Tag strings that belong in this group
+  @param limit {Number}        Items shown before the "see more" toggle
+{% endcomment %}
+
+{%- if group_tags.size > 0 and group_tags.first != blank -%}
+  <div class="productgrid--sidebar-group" data-productgrid-sidebar-group>
+    <button
+      class="productgrid--sidebar-button"
+      data-filter-group-trigger
+      aria-expanded="false"
+    >
+      <h3 class="productgrid--sidebar-title--small">{{ label }}</h3>
+      <div class="productgrid--sidebar-icon-wrapper" tabindex="-1">
+        <span class="productgrid--sidebar-icon">
+          {% render 'icon-chevron-down-small' %}
+        </span>
+      </div>
+    </button>
+
+    <ul
+      class="productgrid--sidebar-item filter-group"
+      data-filter-group="{{ label }}"
+      aria-expanded="false"
+      data-accordion-content
+    >
+      <div class="filter-group--wrapper">
+        {%- for tag in group_tags -%}
+          {%- assign filter_active = false -%}
+          {%- if current_tags contains tag -%}
+            {%- assign filter_active = true -%}
+          {%- endif -%}
+
+          {%- assign filter_class = 'filter-item' -%}
+          {%- if forloop.index > limit -%}
+            {%- assign filter_class = filter_class | append: ' filter-item--hidden' -%}
+          {%- endif -%}
+
+          {%- capture tag_content -%}
+            {%- assign animation_state = 'unchecked' -%}
+            {%- if filter_active -%}
+              {%- assign animation_state = 'checked' -%}
+            {%- endif -%}
+            <span class="filter-icon--checkbox" data-handle="{{ tag | handle }}">
+              {%- render 'icon-checkmark-animated', animation_state: animation_state -%}
+            </span>
+            <span class="filter-text">{{ tag }}</span>
+            <span class="filtered-product-count filtered-product-count--hidden" data-filtered-product-count></span>
+          {%- endcapture -%}
+
+          <li
+            class="{{ filter_class }}"
+            data-group="{{ label }}"
+            data-handle="{{ tag | handle }}"
+            data-tag-title="{{ tag | escape }}"
+            data-filter-active="{{ filter_active }}"
+            {% if forloop.index > limit %}data-hidden-default{% endif %}
+            {% if filter_active %}aria-current="true"{% endif %}
+          >
+            {%- if filter_active -%}
+              {{ tag_content | link_to_remove_tag: tag }}
+            {%- else -%}
+              {{ tag_content | link_to_add_tag: tag }}
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+
+        {%- if group_tags.size > limit -%}
+          <li class="filter-item filter-item--toggle-more">
+            <a class="filter-text--link" href="#" data-filter-toggle="false">
+              {{ 'general.general.see_more' | t }}
+            </a>
+          </li>
+        {%- endif -%}
+      </div>
+    </ul>
+  </div>
+{%- endif -%}
