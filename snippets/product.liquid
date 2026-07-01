@@ -108,20 +108,6 @@
   {% else %}
     {% assign ls_availability = 0 %}
   {% endif %}
-
-  <div id="lipscore-rating"
-    ls-product-name="{{ product.title }}"
-    ls-brand="{{ product.vendor }}"
-    ls-sku="{{ sku_values }}"
-    ls-product-id="{{ product.id }}"
-    ls-product-url="{{ shop.url }}{{ product.url }}"
-    ls-description="{{ product.description | escape }}"
-    ls-image-url="{{ product | img_url: '1024x1024' | remove: '_1024x1024' }}"
-    ls-price="{{ ls_selected_or_first_variant.price | money_without_currency }}"
-    ls-price-currency="{{ shop.currency }}"
-    ls-availability="{{ ls_availability }}"
-    ls-category="{{ product.type }}">
-  </div>
 {% endif %}
                <a name="product-form"></a>
 
@@ -169,17 +155,18 @@
 
       {% if settings.product_ratings_reviews %}
         <div class="product-ratings">
-          <span class="shopify-product-reviews-badge" data-id="{{ product.id }}">
-            <span class="spr-badge">
-              <span class="spr-starrating spr-badge-starrating">
-                <i class="spr-icon spr-icon-star-empty"></i>
-                <i class="spr-icon spr-icon-star-empty"></i>
-                <i class="spr-icon spr-icon-star-empty"></i>
-                <i class="spr-icon spr-icon-star-empty"></i>
-                <i class="spr-icon spr-icon-star-empty"></i>
-              </span>
-            </span>
-          </span>
+          <div id="lipscore-rating"
+            ls-product-name="{{ product.title }}"
+            ls-brand="{{ product.vendor }}"
+            ls-sku="{{ sku_values }}"
+            ls-product-id="{{ product.id }}"
+            ls-product-url="{{ shop.url }}{{ product.url }}"
+            ls-description="{{ product.description | escape }}"
+            ls-image-url="{{ product | img_url: '1024x1024' | remove: '_1024x1024' }}"
+            ls-price="{{ ls_selected_or_first_variant.price | money_without_currency }}"
+            ls-price-currency="{{ shop.currency }}"
+            ls-availability="{{ ls_availability }}"
+            ls-category="{{ product.type }}"></div>
           {% unless is_product_modal %}
             <a
               class="product-ratings-link"
