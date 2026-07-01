@@ -500,7 +500,7 @@
   <div class="pdp-side-col">
     {% render 'product-spec-table' %}
     {%- unless is_product_modal -%}
-      <div class="pdp-review-card">
+      <div class="pdp-review-card" data-review-wrap style="display:none;">
         <div id="lipscore-review-list"
           ls-product-name="{{ product.title }}"
           ls-brand="{{ product.vendor }}"
@@ -514,6 +514,20 @@
           ls-availability="{{ ls_availability }}"
           ls-category="{{ product.type }}"></div>
       </div>
+      <script>
+      (function(){
+        var wrap=document.querySelector('[data-review-wrap]');
+        var el=document.getElementById('lipscore-review-list');
+        if(!wrap||!el){return;}
+        function ready(){return (el.textContent||'').replace(/\s+/g,'').length>0;}
+        function reveal(){if(ready()){wrap.style.display='';return true;}return false;}
+        if(!reveal()){
+          var obs=new MutationObserver(function(){if(reveal()){obs.disconnect();}});
+          obs.observe(el,{childList:true,subtree:true,characterData:true});
+          setTimeout(function(){obs.disconnect();},8000);
+        }
+      })();
+      </script>
     {%- endunless -%}
     {%- capture brand_logos -%}{% render 'product-brand-logos' %}{%- endcapture -%}
     {%- if brand_logos != blank -%}
