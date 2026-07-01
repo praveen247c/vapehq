@@ -68,32 +68,8 @@
   color: var(--pdp-muted);
 }
 
-/* ---- Variant options as segmented pills (when rendered as boxes) ---- */
-.product--container .variants-ui__option-values,
-.product--container .form-options-selectable-boxes .option-values {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.product--container .variants-ui__option-value,
-.product--container .form-options-selectable-boxes .option-value {
-  border: 1.5px solid var(--pdp-line);
-  border-radius: 8px;
-  overflow: hidden;
-  transition: border-color 0.15s ease, background-color 0.15s ease;
-}
-.product--container .variants-ui__option-value--selected,
-.product--container .form-options-selectable-boxes .option-value--selected {
-  border-color: var(--pdp-accent);
-  background: rgba(11, 118, 224, 0.08);
-}
-.product--container .variants-ui__option-value-label,
-.product--container .form-options-selectable-boxes .option-value-label {
-  padding: 9px 15px;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: center;
-}
+/* Variant options are already rendered as pills by the theme
+   (.option-value-name); no extra wrapper border here or it doubles up. */
 
 /* ---- Add-to-cart + quantity row ---- */
 .product--container .product-form--atc {
