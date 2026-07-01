@@ -75,21 +75,23 @@
 .product--container .product-form--atc {
   margin-top: 16px;
 }
-/* Stepper + Add to cart on one row */
+/* Stepper + Add to cart on one row (explicit margin gap — the theme's
+   inline-block widths + font-size:0 on .product-form--atc eat flex gap) */
 .product--container .pdp-buyrow {
   display: flex;
-  gap: 12px;
   align-items: center;
   margin-top: 4px;
 }
 .product--container .pdp-buyrow .product-form--atc-qty {
-  margin: 0;
   flex: 0 0 auto;
+  width: auto !important;
+  margin: 0 12px 0 0 !important;
 }
 .product--container .pdp-buyrow [data-product-atc] {
   flex: 1 1 auto;
+  width: auto !important;
   min-height: 54px;
-  margin: 0;
+  margin: 0 !important;
 }
 /* Unified quantity stepper */
 .product--container .pdp-stepper {
