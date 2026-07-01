@@ -152,7 +152,8 @@
       {% endif %}
 
       {% if settings.product_ratings_reviews %}
-        <div class="product-ratings">
+        {% comment %} Shown only once Lipscore injects a real rating; hidden entirely if none {% endcomment %}
+        <div class="product-ratings" data-ratings-wrap style="display:none;">
           <div id="lipscore-rating"
             ls-product-name="{{ product.title }}"
             ls-brand="{{ product.vendor }}"
@@ -165,15 +166,23 @@
             ls-price-currency="{{ shop.currency }}"
             ls-availability="{{ ls_availability }}"
             ls-category="{{ product.type }}"></div>
-          {% unless is_product_modal %}
-            <a
-              class="product-ratings-link"
-              href="#lipscore-review-list"
-              style="margin-left:8px; font-size:13px; color:#0b76e0; white-space:nowrap;"
-              onclick="var t=document.getElementById('lipscore-review-list'); if(t){event.preventDefault(); t.scrollIntoView({behavior:'smooth'});}"
-            >Read reviews</a>
-          {% endunless %}
         </div>
+        {% unless is_product_modal %}
+          <script>
+          (function(){
+            var wrap=document.querySelector('[data-ratings-wrap]');
+            var el=document.getElementById('lipscore-rating');
+            if(!wrap||!el){return;}
+            function ready(){return el.querySelector('*')!==null||(el.textContent||'').replace(/\s/g,'')!=='';}
+            function reveal(){if(ready()){wrap.style.display='';return true;}return false;}
+            if(!reveal()){
+              var obs=new MutationObserver(function(){if(reveal()){obs.disconnect();}});
+              obs.observe(el,{childList:true,subtree:true});
+              setTimeout(function(){obs.disconnect();},8000);
+            }
+          })();
+          </script>
+        {% endunless %}
       {% endif %}
 
       {% comment %} Status row: stock + dispatch countdown, under the rating {% endcomment %}
