@@ -238,13 +238,6 @@
         {% endif %}
       {% endunless %}
 
-      {% comment %} Short intro paragraph, under the dispatch line {% endcomment %}
-      {% unless is_product_modal %}
-        {% if desc_intro != '' %}
-          <div class="pdp-intro rte">{{ desc_intro }}</div>
-        {% endif %}
-      {% endunless %}
-
       <div class="product-pricing" aria-live="polite" data-product-pricing>
         {%
           render 'product-badge',
@@ -294,7 +287,14 @@
         
         <form data-payment-terms-target style="display: none;"></form>
       </div>
-      
+
+      {% comment %} Short intro paragraph, under the price {% endcomment %}
+      {% unless is_product_modal %}
+        {% if desc_intro != '' %}
+          <div class="pdp-intro rte">{{ desc_intro }}</div>
+        {% endif %}
+      {% endunless %}
+
       {% if product.tags contains "weeklydeal" %}
       <a href="/pages/offers" style="text-decoration:none;"><div style="color:#0b76e0; font-weight:bold; margin-top:5px;"><i class="fa-sharp fa-solid fa-timer fa-bounce" style="float:left; margin-right:5px;"></i> TIMED WEEKLY DEAL</div></a> 
       <span style="font-size:11px; color:#0b76e0; font-weight:bold;">ONLINE ONLY</span>
