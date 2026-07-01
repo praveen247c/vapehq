@@ -476,13 +476,15 @@
       <div class="product-description rte" data-product-description>
         <h2>Description</h2>
         {{ readmore_split[0] }}
-      {% render 'related-description' %}
       {% render 'product-flavour-notes' %}
       </div>
     {% endif %}
   {% endif %}
 
-  {% render 'product-spec-table' %}
+  <div class="pdp-side-col">
+    {% render 'product-spec-table' %}
+    {% render 'related-description' %}
+  </div>
   </div>
 {% endunless %}
 

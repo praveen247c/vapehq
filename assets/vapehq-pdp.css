@@ -150,21 +150,33 @@
   margin-top: 22px;
 }
 .product-desc-specs-row > .product-description,
-.product-desc-specs-row > .product-specs {
+.product-desc-specs-row > .pdp-side-col {
   margin-top: 0;
 }
 .product-desc-specs-row > .product-description {
   flex: 1 1 auto;
   min-width: 0;
 }
-.product-desc-specs-row > .product-specs {
+.product-desc-specs-row > .pdp-side-col {
   flex: 0 0 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.product-desc-specs-row > .pdp-side-col > * {
+  margin-top: 0;
+}
+/* upsell card fills the side column */
+.product-desc-specs-row > .pdp-side-col .recommendedcontainer,
+.product-desc-specs-row > .pdp-side-col .recommendedoutline {
+  max-width: 100%;
+  width: 100%;
 }
 @media screen and (max-width: 768px) {
   .product-desc-specs-row {
     flex-direction: column;
   }
-  .product-desc-specs-row > .product-specs {
+  .product-desc-specs-row > .pdp-side-col {
     flex-basis: auto;
     width: 100%;
   }
