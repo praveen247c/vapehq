@@ -45,6 +45,19 @@
 {% assign readmore_split = product.description | split: '<!-- more -->' %}
 {% assign multiTab = product.description | split: '<!-- tab -->' %}
 {% if multiTab.size > 1 %}<!-- It's Here!!! -->{% endif %}
+
+{% comment %}
+  Pull the first paragraph out as a short intro shown in the buy box.
+  The rest of the description (Key Features, What's in the Box, specs, ...)
+  stays in the full-width section below. Only for simple (non-tabbed) content.
+{% endcomment %}
+{% assign desc_body = readmore_split[0] %}
+{% assign desc_intro = '' %}
+{% assign desc_rest = desc_body %}
+{% if multiTab.size <= 1 and desc_body contains '</p>' %}
+  {% assign desc_intro = desc_body | split: '</p>' | first | append: '</p>' %}
+  {% assign desc_rest = desc_body | remove_first: desc_intro %}
+{% endif %}
 {% if onboarding %}
   {% assign compare_at_price = 2999 %}
   {% assign price = 1999 %}
@@ -222,6 +235,13 @@
             tick();setInterval(tick,60000);
           })();
           </script>
+        {% endif %}
+      {% endunless %}
+
+      {% comment %} Short intro paragraph, under the dispatch line {% endcomment %}
+      {% unless is_product_modal %}
+        {% if desc_intro != '' %}
+          <div class="pdp-intro rte">{{ desc_intro }}</div>
         {% endif %}
       {% endunless %}
 
@@ -472,7 +492,7 @@
     {% if readmore_split[0] != blank and hide_description != true %}
       <div class="product-description rte" data-product-description>
         <h2>Description</h2>
-        {{ readmore_split[0] }}
+        {{ desc_rest }}
       {% render 'product-flavour-notes' %}
       </div>
     {% endif %}

@@ -375,6 +375,17 @@
 .product--container .pdp-dispatch b { color: #10151f; }
 .product--container .pdp-dispatch .cd { color: #0b76e0; font-weight: 700; }
 
+/* Short intro paragraph under the dispatch line */
+.product--container .pdp-intro {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #36404f;
+}
+.product--container .pdp-intro p {
+  margin: 0;
+}
+
 /* Price box with divider lines */
 .product--container .product-pricing {
   padding: 14px 0;
