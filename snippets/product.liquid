@@ -111,8 +111,6 @@
 {% endif %}
                <a name="product-form"></a>
 
-      {% render 'product-brand-logos' %}
-
       {% if product.tags contains "Terea" and product.variants.first.inventory_quantity <= 0 %}
 <!--<div style="padding:5px; margin-top:10px; font-size:11px; background-color:#FF0000; color:#FFF; display:inline-block; font-weight:bold; border-radius:5px;">WE'RE EXPECTING A NEW DELIVERY OF TEREA ON THURSDAY 7TH SEPTEMBER</div> -->
         {% endif %}
@@ -473,6 +471,13 @@
 
   <div class="pdp-side-col">
     {% render 'product-spec-table' %}
+    {%- capture brand_logos -%}{% render 'product-brand-logos' %}{%- endcapture -%}
+    {%- if brand_logos != blank -%}
+      <div class="pdp-brand-card">
+        <div class="pdp-brand-card__head">Shop the range</div>
+        {{ brand_logos }}
+      </div>
+    {%- endif -%}
     {% render 'related-description' %}
   </div>
   </div>
