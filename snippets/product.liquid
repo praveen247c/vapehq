@@ -499,6 +499,22 @@
 
   <div class="pdp-side-col">
     {% render 'product-spec-table' %}
+    {%- unless is_product_modal -%}
+      <div class="pdp-review-card">
+        <div id="lipscore-review-list"
+          ls-product-name="{{ product.title }}"
+          ls-brand="{{ product.vendor }}"
+          ls-sku="{{ sku_values }}"
+          ls-product-id="{{ product.id }}"
+          ls-product-url="{{ shop.url }}{{ product.url }}"
+          ls-description="{{ product.description | escape }}"
+          ls-image-url="{{ product | img_url: '1024x1024' | remove: '_1024x1024' }}"
+          ls-price="{{ ls_selected_or_first_variant.price | money_without_currency }}"
+          ls-price-currency="{{ shop.currency }}"
+          ls-availability="{{ ls_availability }}"
+          ls-category="{{ product.type }}"></div>
+      </div>
+    {%- endunless -%}
     {%- capture brand_logos -%}{% render 'product-brand-logos' %}{%- endcapture -%}
     {%- if brand_logos != blank -%}
       <div class="pdp-brand-card">

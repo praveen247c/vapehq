@@ -31,6 +31,20 @@
   border-radius: var(--pdp-radius);
 }
 
+/* ---- Reviews summary card (right side column) ---- */
+.product--container .pdp-review-card {
+  background: #fff;
+  border: 1px solid #d7dce3;
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 10px 30px -12px rgba(16, 21, 31, 0.10);
+  overflow: hidden;
+}
+.product--container .pdp-review-card #lipscore-review-list {
+  max-width: 100% !important;
+  margin: 0 !important;
+}
+
 /* ---- Brand "Shop the range" card (right side column) ---- */
 .product--container .pdp-brand-card {
   background: #fff;
