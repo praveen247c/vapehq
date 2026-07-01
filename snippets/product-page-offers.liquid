@@ -1,248 +1,66 @@
-  <div class="pdp-deals" style="margin-top:10px;">
+{% comment %}
+  Product-page offers as a compact "Buy more, save more" strip.
 
-{% if product.tags contains "2for10" %}
-<a href="/collections/2-for-10" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">2 FOR £10</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
+  Multibuy "{qty}for{price}" tags (e.g. 3for1350, 10for4250, qsalt3for10,
+  pod3for999) are parsed generically: qty and total are read from the tag,
+  and per-unit price + saving are calculated against product.price. Values
+  encoded >= 100 are treated as pence (1350 = £13.50); smaller ones as whole
+  pounds (10 = £10). Rows are de-duplicated by quantity and sorted ascending.
 
-{% if product.tags contains "5for5" %}
-<a href="/collections/5-for-5" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">5 FOR £5</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-    
-{% if product.tags contains "5for10" %}
-<a href="/collections/5-for-10" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">5 FOR £10</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
+  Free-gift / starter-kit offers render as their own rows underneath.
+  Brand blue (#0b76e0) is kept.
+{% endcomment %}
 
-{% if product.tags contains "2for15" %}
-<a href="/collections/2-for-15" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">2 FOR £15</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
+{%- liquid
+  assign built = ''
+  assign seen = ''
+  for tag in product.tags
+    assign core = tag | downcase | remove: 'qsalt' | remove: 'pod'
+    if core contains 'for'
+      assign parts = core | split: 'for'
+      assign q = parts[0] | times: 1
+      assign pn = parts[1] | times: 1
+      if q > 1 and pn > 0
+        assign qkey = ':' | append: q | append: ':'
+        unless seen contains qkey
+          assign seen = seen | append: qkey
+          if pn >= 100
+            assign totp = pn
+          else
+            assign totp = pn | times: 100
+          endif
+          assign qpad = q | prepend: '000' | slice: -3, 3
+          assign built = built | append: '~~' | append: qpad | append: '|' | append: q | append: '|' | append: totp
+        endunless
+      endif
+    endif
+  endfor
+  assign rows = built | remove_first: '~~' | split: '~~' | sort
+-%}
 
-{% if product.tags contains "2for20" %}
-<a href="/collections/2-for-20" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">2 FOR £20</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
+{%- capture specials -%}
+  {%- if product.tags contains 'Starter Kit QSalts' -%}<a class="pdp-offer-row pdp-offer-row--gift" href="/collections/qsalts"><i class="fa-solid fa-gift pdp-offer-ic"></i><span><b>FREE 10ml QSalts</b> &mdash; add the device to your cart, then pick your flavour</span></a>{%- endif -%}
+  {%- if product.tags contains 'Starter Kit Pure' -%}<a class="pdp-offer-row pdp-offer-row--gift" href="/collections/free-10ml"><i class="fa-solid fa-gift pdp-offer-ic"></i><span><b>FREE 10ml E-Liquid</b> &mdash; choose any bottle in this range</span></a>{%- endif -%}
+  {%- if product.tags contains 'Starter Kit Deliciu' -%}<a class="pdp-offer-row pdp-offer-row--gift" href="/collections/3-free-e-liquid"><i class="fa-solid fa-gift pdp-offer-ic"></i><span><b>3 FREE 10ml Salts</b> &mdash; add this device, then pick 3 free e-liquids</span></a>{%- endif -%}
+  {%- if product.tags contains '2freeheets' -%}<a class="pdp-offer-row pdp-offer-row--gift" href="/collections/iqos-heets"><i class="fa-solid fa-gift pdp-offer-ic"></i><span><b>2 FREE packs of Heets</b></span></a>{%- endif -%}
+  {%- if product.tags contains '2freeterea' -%}<a class="pdp-offer-row pdp-offer-row--gift" href="/collections/iqos-terea"><i class="fa-solid fa-gift pdp-offer-ic"></i><span><b>2 FREE packs of Terea / Delia</b></span></a>{%- endif -%}
+  {%- if product.tags contains 'q2bundle' -%}<div class="pdp-offer-row pdp-offer-row--gift"><i class="fa-solid fa-gift pdp-offer-ic"></i><span><b>4 FREE QSalts</b> &mdash; 1 included + 3 of your choice</span></div>{%- endif -%}
+{%- endcapture -%}
 
-{% if product.tags contains "2for25" %}
-<a href="/collections/2-for-25" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">2 FOR £25</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-
-{% if product.tags contains "2for30" %}
-<a href="/collections/2-for-30" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">2 FOR £30</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-
-{% if product.tags contains "3for10" %}
-<a href="/collections/3-for-10" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">3 FOR £10</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-
-{% if product.tags contains "3for12" %}
-<a href="/collections/3-for-12" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">3 FOR £12</strong><br>
-<i class="fas fa-chevron-right"></i> View all products in this offer</div></a><span style="font-size:11px;">ONLINE ONLY</span>
-{% endif %}
-
-{% if product.tags contains "3for1250" %}
-<a href="/collections/3-for-1250" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">3 FOR £12.50</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-
-{% if product.tags contains "3for15" %}
-<a href="/collections/3-for-15" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">3 FOR £15</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-
-{% if product.tags contains "3for30" %}
-<a href="/collections/3-for-30" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">3 FOR £30</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-
-{% if product.tags contains "4for10" %}
-<a href="/collections/4-for-10" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">4 FOR £10</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-
-{% if product.tags contains "4for12" %}
-<a href="/collections/4-for-12" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">4 FOR £12</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-
-{% if product.tags contains "5for12" %}
-<a href="/collections/5-for-12" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">5 FOR £12</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-    
-{% if product.tags contains "10for40" %}
-<a href="/collections/10-for-40" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">10 FOR £40</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-
-{% if product.tags contains "2for699" %}
-<a href="/collections/2-for-699" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">2 FOR £6.99</strong><br>
-<i class="fas fa-chevron-right"></i> View all disposables in this offer</div></a>
-{% endif %}
-
-{% if product.tags contains "3for999" %}
-<a href="/collections/3-for-999" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">3 FOR £9.99</strong><br>
-<i class="fas fa-chevron-right"></i> View all disposables in this offer</div></a>
-{% endif %}
-
-{% if product.tags contains "2freeheets" %}
-<a href="/collections/iqos-heets" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">2 FREE HEETS</strong><br>
-<i class="fas fa-chevron-right"></i> Add 2 free packs of Heets</div></a>
-{% endif %}
-
-{% if product.tags contains "Starter Kit Pure" %}
-<a href="/collections/free-10ml" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">FREE 10ML E-LIQUID</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-
-    {% if product.tags contains "Starter Kit QSalts" %}
-<a href="/collections/qsalts" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">FREE 10ML QSALTS</strong><br>
-<i class="fas fa-chevron-right"></i> Simply add the device to your cart and then pick your flavour</div></a>
-{% endif %}
-
-    {% if product.tags contains "pod3for999" %}
-<div class="productpageoffer"><strong style="font-size:25px">3 FOR £9.99</strong><br>
-<i class="fas fa-chevron-right"></i> Save money on QSeries Pods!</div>
-{% endif %}
-    
-    {% if product.tags contains "5for1449" %}
-<div class="productpageoffer"><strong style="font-size:25px">5 FOR £14.49</strong><br>
-<i class="fas fa-chevron-right"></i> Save money on QSeries Pods!</div>
-{% endif %}
-
-    {% if product.tags contains "2freeterea" %}
-<a href="/collections/iqos-terea" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">2 FREE TEREA/DELIA</strong><br>
-<i class="fas fa-chevron-right"></i> Add 2 free packs of Terea/Delia</div></a>
-{% endif %}
-
-    {% if product.tags contains "Starter Kit Deliciu" %}
-<a href="/collections/3-free-e-liquid" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">3 FREE 10ML SALTS</strong><br>
-<i class="fas fa-chevron-right"></i> Simply add this device to your cart, along with 3 FREE E-Liquids from this collection</div></a>
-{% endif %}    
-
-    {% if product.tags contains "2for12" %}
-<div class="productpageoffer"><strong style="font-size:25px">2 FOR £12</strong><br>
-<i class="fas fa-chevron-right"></i> Save money!</div>
-{% endif %}
-
-    {% if product.tags contains "2for8" %}
-<a href="/collections/2-for-8" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">2 FOR £8</strong><br>
-<i class="fas fa-chevron-right"></i> View all products in this offer</div></a>
-{% endif %}
-
-    {% if product.tags contains "3for25" %}
-<a href="/collections/3-for-30" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">3 FOR £25</strong><br>
-<i class="fas fa-chevron-right"></i> View all products in this offer</div></a>
-{% endif %}
-    
-    {% if product.tags contains "" %}
-<a href="" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">FREE QSALT</strong><br>
-<i class="fas fa-chevron-right"></i> FREE E-Liquid Included in Box</div></a>
-{% endif %}
-
-    {% if product.tags contains "6for10" %}
-<a href="/collections/stone-cold-savings-2024/E-Liquid" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">6 FOR £10</strong><br>
-<i class="fas fa-chevron-right"></i> View all products in this offer</div></a>
-{% endif %}
-
-    {% if product.tags contains "2for7" %}
-<a href="/collections/nicotine-pouches" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">2 FOR £7</strong><br>
-<i class="fas fa-chevron-right"></i> View all products in this offer</div></a>
-{% endif %}
-
-    {% if product.tags contains "2for5" %}
-<a href="/collections/nicotine-pouches" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">2 FOR £5</strong><br>
-<i class="fas fa-chevron-right"></i> View all products in this offer</div></a>
-{% endif %}
-
-    {% if product.tags contains "10for4" %}
-<a href="/products/hqlabs-qpod-2-cool-grape" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">10 FOR £4</strong><br>
-<i class="fas fa-chevron-right"></i> View all products in this offer</div></a>
-{% endif %}
-
-    {% if product.tags contains "2for14" %}
-<div class="productpageoffer"><strong style="font-size:25px">2 FOR £14</strong><br>
-<i class="fas fa-chevron-right"></i> Save money!</div>
-{% endif %}
-
-    {% if product.tags contains "2for750" %}
-<div class="productpageoffer"><strong style="font-size:25px">2 FOR £7.50</strong><br>
-<i class="fas fa-chevron-right"></i> Save money!</div>
-{% endif %}
-
-    {% if product.tags contains "q2bundle" %}
-<div class="productpageoffer"><strong style="font-size:25px">4 FREE QSALTS</strong><br>
-<i class="fas fa-chevron-right"></i> 1 Included + 3 of your choice!</div>
-{% endif %}
-    
-    {% if product.tags contains "3for20" %}
-<div class="productpageoffer"><strong style="font-size:25px">3 FOR £20</strong><br>
-<i class="fas fa-chevron-right"></i> Save money!</div>
-{% endif %}    
-
-    {% if product.tags contains "2for1750" %}
-<div class="productpageoffer"><strong style="font-size:25px">2 FOR £17.50</strong><br>
-<i class="fas fa-chevron-right"></i> Save money!</div>
-{% endif %}  
-
-{% if product.tags contains "5for15" %}
-<a href="/collections/5-for-15" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">5 FOR £15</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-
-{% if product.tags contains "5for25" %}
-<a href="/collections/5-for-25" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">5 FOR £25</strong><br>
-<i class="fas fa-chevron-right"></i> Save Money!</div></a>
-{% endif %}
-{% if product.tags contains "3for1350" %}
-<div class="productpageoffer"><strong style="font-size:25px">3 FOR £13.50</strong><br>
-<i class="fas fa-chevron-right"></i> Save Money!</div></a>
-{% endif %}
-{% if product.tags contains "10for4250" %}
-<div class="productpageoffer"><strong style="font-size:25px">10 FOR £42.50</strong><br>
-<i class="fas fa-chevron-right"></i> Save Money!</div></a>
-{% endif %}
-{% if product.tags contains "4for20" %}
-<div class="productpageoffer"><strong style="font-size:25px">4 FOR £20</strong><br>
-<i class="fas fa-chevron-right"></i> Save Money!</div></a>
-{% endif %}
-{% if product.tags contains "2for6" %}
-<div class="productpageoffer"><strong style="font-size:25px">2 FOR £6</strong><br>
-<i class="fas fa-chevron-right"></i> Save Money!</div></a>
-{% endif %}
-{% if product.tags contains "3for5" %}
-<div class="productpageoffer"><strong style="font-size:25px">3 FOR £5</strong><br>
-<i class="fas fa-chevron-right"></i> Save Money!</div></a>
-{% endif %}
-{% if product.tags contains "qsalt3for10" %}
-<a href="/collections/3-for-10" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">3 FOR £10</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-{% if product.tags contains "qsalt5for15" %}
-<a href="/collections/5-for-15" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">5 FOR £15</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-{% if product.tags contains "2for16" %}
-<a href="/collections/2-for-16" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">2 FOR £16</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-{% if product.tags contains "2for9" %}
-<a href="/collections/2-for-9" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">2 FOR £9</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-{% if product.tags contains "2for1750" %}
-<a href="/collections/2-for-1750" style="text-decoration:none"><div class="productpageoffer"><strong style="font-size:25px">2 FOR £17.50</strong><br>
-<i class="fas fa-chevron-right"></i> View all e-liquids in this offer</div></a>
-{% endif %}
-
-
-
-    
-    
-
+{%- if rows.size > 0 and rows.first != blank or specials != blank -%}
+  <div class="pdp-multibuy" data-product-offers>
+    <div class="pdp-multibuy__head">Buy more, save more</div>
+    {%- for row in rows -%}
+      {%- assign rp = row | split: '|' -%}
+      {%- assign q = rp[1] | times: 1 -%}
+      {%- assign totp = rp[2] | times: 1 -%}
+      {%- assign perp = totp | divided_by: q -%}
+      {%- assign savep = product.price | times: q | minus: totp -%}
+      <div class="pdp-offer-row">
+        <span class="pdp-offer-deal">{{ q }} for {{ totp | money }}</span>
+        <span class="pdp-offer-meta">{{ perp | money }} each{% if savep > 0 %} &middot; <b>save {{ savep | money }}</b>{% endif %}</span>
+      </div>
+    {%- endfor -%}
+    {{ specials }}
   </div>
+{%- endif -%}

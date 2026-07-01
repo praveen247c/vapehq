@@ -1,6 +1,6 @@
-<div align="center">
+<div align="center" class="pdp-multibuy-badges">
 
-  {% if product.compare_at_price %} 
+  {% if product.compare_at_price %}
 <div class="multibuy-banner"><i class="fa fa-info-circle fa-beat-fade"></i>&nbsp;REDUCED - SAVE {{ product.compare_at_price_max | minus: product.price | times: 100.0 | divided_by: product.compare_at_price_max | money_without_currency | times: 100 | remove: '.0'}}%</div>
   {% endif %}
   

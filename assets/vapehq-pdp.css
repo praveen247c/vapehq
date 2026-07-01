@@ -338,16 +338,94 @@
   border-bottom: 1px solid #f0f2f6;
 }
 
-/* Deal cards row (offers laid out side by side) */
-.product--container .pdp-deals {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 10px;
+/* Compact "buy more, save more" strip (replaces the big deal cards) */
+.product--container .pdp-multibuy {
+  margin-top: 12px;
+  border: 1px solid #e6e9ef;
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: #fff;
 }
-.product--container .pdp-deals .productpageoffer {
-  flex: 1 1 150px;
+.product--container .pdp-multibuy__head {
+  font-size: 12.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: #6f7a8a;
+  margin-bottom: 6px;
+}
+.product--container .pdp-offer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid #f0f2f6;
+  font-size: 14px;
+  color: #10151f;
+  text-decoration: none;
+}
+.product--container .pdp-multibuy__head + .pdp-offer-row {
+  border-top: 0;
+}
+.product--container .pdp-offer-deal {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.product--container .pdp-offer-meta {
+  color: #36404f;
+  font-size: 13px;
+  text-align: right;
+}
+.product--container .pdp-offer-meta b {
+  color: #0b76e0;
+}
+/* Free-gift rows */
+.product--container .pdp-offer-row--gift {
+  justify-content: flex-start;
+  gap: 10px;
+  color: #10151f;
+}
+.product--container .pdp-offer-ic {
+  color: #0b76e0;
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+/* Multibuy / sale badges on the product image */
+.product--container .product-gallery {
+  position: relative;
+}
+.product--container .pdp-multibuy-badges {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  max-width: 60%;
   margin: 0;
+}
+.product--container .pdp-multibuy-badges .multibuy-banner {
+  display: inline-block;
+  width: auto;
+  max-width: 100%;
+  margin: 0;
+  padding: 5px 12px;
+  font-size: 11px;
+  line-height: 1.25;
+  border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+.product--container .pdp-multibuy-badges .multibuy-banner i {
+  margin-right: 4px;
+}
+@media screen and (max-width: 719px) {
+  .product--container .pdp-multibuy-badges {
+    max-width: 70%;
+  }
 }
 
 /* Strength helper box */
