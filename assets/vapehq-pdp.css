@@ -198,6 +198,12 @@
   width: 42%;
   font-weight: 600;
 }
+/* Values pushed to the right and bold */
+.product--container .product-specs table td {
+  text-align: right;
+  font-weight: 700;
+  color: #10151f;
+}
 .product--container .product-specs table tr:last-child th,
 .product--container .product-specs table tr:last-child td {
   border-bottom: 0;
